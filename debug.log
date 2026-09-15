@@ -1,0 +1,72 @@
+[0913/223718.358:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/223718.358:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/223718.358:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/223718.358:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/223718.358:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/223718.934:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/223718.934:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/223718.934:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/223718.934:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/223718.934:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/223718.934:ERROR:components\viz\service\main\viz_main_impl.cc:190] Exiting GPU process due to errors during initialization
+[0913/223720.399:ERROR:gpu\ipc\service\gpu_channel_manager.cc:952] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
+[0913/223902.860:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/223902.860:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/223902.860:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/223902.860:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/223902.860:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/223903.143:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/223903.143:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/223903.143:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/223903.143:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/223903.143:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/223903.143:ERROR:components\viz\service\main\viz_main_impl.cc:190] Exiting GPU process due to errors during initialization
+[0913/223903.182:ERROR:gpu\ipc\service\gpu_channel_manager.cc:952] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
+[0913/224118.930:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/224118.932:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/224118.932:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/224118.932:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/224118.932:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/224119.235:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/224119.235:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/224119.235:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/224119.235:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/224119.235:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/224119.235:ERROR:components\viz\service\main\viz_main_impl.cc:190] Exiting GPU process due to errors during initialization
+[0913/224119.277:ERROR:gpu\ipc\service\gpu_channel_manager.cc:952] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
+[0913/225058.087:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225058.088:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225058.088:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/225058.088:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/225058.088:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/225058.315:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225058.315:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225058.315:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/225058.315:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/225058.315:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/225058.318:ERROR:components\viz\service\main\viz_main_impl.cc:190] Exiting GPU process due to errors during initialization
+[0913/225058.423:ERROR:gpu\ipc\service\gpu_channel_manager.cc:952] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
+[0913/225216.279:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225216.280:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225216.280:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/225216.280:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/225216.280:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/225216.529:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225216.529:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225216.529:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/225216.529:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/225216.529:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/225216.532:ERROR:components\viz\service\main\viz_main_impl.cc:190] Exiting GPU process due to errors during initialization
+[0913/225216.646:ERROR:gpu\ipc\service\gpu_channel_manager.cc:952] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
+[0913/225417.666:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225417.667:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225417.667:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/225417.667:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/225417.667:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/225417.947:ERROR:ui\gl\angle_platform_impl.cc:37] Display.cpp:1136 (egl::Display::initialize): ANGLE Display::initialize error 0: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225417.947:ERROR:ui\gl\egl_util.cc:92] EGL Driver message (Critical) eglInitialize: Internal Vulkan error (-3): Initialization of an object could not be completed for implementation-specific reasons, in ..\..\third_party\angle\src\libANGLE\renderer\vulkan\vk_renderer.cpp, rx::vk::Renderer::initialize:2484.
+[0913/225417.947:ERROR:ui\gl\gl_display.cc:630] eglInitialize SwANGLE failed with error EGL_NOT_INITIALIZED
+[0913/225417.947:ERROR:ui\gl\gl_display.cc:665] Initialization of all (1) EGL display types failed.
+[0913/225417.947:ERROR:ui\gl\init\gl_initializer_win.cc:155] GLDisplayEGL::Initialize failed.
+[0913/225417.950:ERROR:components\viz\service\main\viz_main_impl.cc:190] Exiting GPU process due to errors during initialization
+[0913/225418.055:ERROR:gpu\ipc\service\gpu_channel_manager.cc:952] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
