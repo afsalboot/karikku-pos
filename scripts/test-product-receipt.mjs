@@ -133,6 +133,7 @@ try {
   await page.setViewportSize({ width: 820, height: 1180 });
   await page.getByRole('button', { name: 'New Sale', exact: true }).click();
   await page.getByRole('button', { name: /Special Mango/ }).click();
+  await page.locator('.pos-mobile-summary').click();
   await page.getByRole('button', { name: /Proceed Payment/ }).click();
   await page.getByRole('button', { name: 'GPay / UPI', exact: true }).click();
   // Browser-only response fixture to test long paper without storing a test sale.

@@ -1,18 +1,18 @@
 import ProductImage from "./product-image";
 import { useState } from "react";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, Pencil } from "lucide-react";
 import { formatCurrency } from "@/lib/client";
 
 export default function CartItem({ item, cart, settings = {} }) {
   const [noteOpen, setNoteOpen] = useState(false);
   return (
     <article className="pos-cart-item border-b border-[#edf1e9] py-4">
-      <div className="flex items-start gap-3">
+      <div className="pos-cart-item-summary flex items-start gap-3">
         <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[#f0f4ec]">
           <ProductImage src={item.imageUrl} size={24} />
         </div>
-        <div className="min-w-0 flex-1">
-          <strong className="block text-sm leading-5 break-words">
+        <div className="pos-cart-item-info min-w-0 flex-1" data-has-options={Boolean(item.variantName)}>
+          <strong className="block text-sm leading-5 break-words" title={item.name}>
             {item.name}
           </strong>
           <small className="mt-0.5 block text-[11px] text-[#6a756c]">
@@ -23,7 +23,7 @@ export default function CartItem({ item, cart, settings = {} }) {
               + {item.addonNames.join(", ")}
             </small>
           )}
-          <small className="mt-1 block text-xs font-medium text-[#245b3a]">
+          <small className="pos-cart-unit-price mt-1 block text-xs font-medium text-[#245b3a]">
             {formatCurrency(item.unitTotal)} each
           </small>
         </div>
@@ -80,8 +80,10 @@ export default function CartItem({ item, cart, settings = {} }) {
           className="mt-1 flex min-h-9 items-center gap-1 text-xs text-[#6a756c] hover:text-[#245b3a]"
           onClick={() => setNoteOpen(true)}
           aria-label={`Add note for ${item.name}`}
+          title={`Add note for ${item.name}`}
         >
           <Plus size={13} />
+          <Pencil size={16} className="mobile-cart-note-icon" />
           Add note
         </button>
       ))}

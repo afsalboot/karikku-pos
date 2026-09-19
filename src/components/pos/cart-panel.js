@@ -1,4 +1,4 @@
-import { ArrowRight, ShoppingBasket } from "lucide-react";
+import { ArrowRight, ShoppingBasket, X } from "lucide-react";
 import { formatCurrency } from "@/lib/client";
 import CartItem from "./cart-item";
 
@@ -56,16 +56,17 @@ export default function CartPanel({
   calculationError,
   onProceed,
   onClear,
+  onClose,
 }) {
   const count = cart.items.reduce((sum, item) => sum + item.quantity, 0);
   return (
     <aside
-      id="current-sale"
+      id={onClose ? "mobile-current-sale" : "current-sale"}
       tabIndex={-1}
       aria-label="Current Sale"
       className="pos-cart flex min-w-0 scroll-mt-5 flex-col overflow-hidden rounded-[14px] border border-[#e3e8e0] bg-white shadow-sm"
     >
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[#e3e8e0] px-5 py-4">
+      <div className="pos-cart-header flex shrink-0 items-center justify-between gap-3 border-b border-[#e3e8e0] px-5 py-4">
         <div>
           <h2>Current Sale</h2>
           <p className="mt-1 text-xs text-[#6a756c]" aria-live="polite">
@@ -80,6 +81,7 @@ export default function CartPanel({
         >
           Clear cart
         </button>
+        {onClose && <button type="button" className="mobile-cart-close" aria-label="Close cart" onClick={onClose}><X size={20} /></button>}
       </div>
       <fieldset
         disabled={pending}
@@ -104,7 +106,7 @@ export default function CartPanel({
             </div>
           )}
         </div>
-        <div className="shrink-0 space-y-3 border-t border-[#e3e8e0] bg-[#fcfdfb] px-5 py-4">
+        <div className="pos-cart-footer shrink-0 space-y-3 border-t border-[#e3e8e0] bg-[#fcfdfb] px-5 py-4">
           <div className="flex justify-between text-sm">
             <span className="text-[#6a756c]">Subtotal</span>
             <strong>{formatCurrency(cart.calculateSubtotal())}</strong>

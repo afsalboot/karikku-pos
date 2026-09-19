@@ -1,8 +1,9 @@
 "use client";
 import { useRef, useState } from "react";
-import { ShoppingBasket, ArrowDown } from "lucide-react";
+import { ShoppingBasket, ChevronUp } from "lucide-react";
 import ProductBrowser from "./product-browser";
 import CartPanel from "./cart-panel";
+import MobileCartSheet from "./mobile-cart-sheet";
 import PaymentModal from "./payment-modal";
 import DuplicateSaleModal from "./duplicate-sale-modal";
 import { toast } from "sonner";
@@ -35,6 +36,7 @@ function Pos({ duplicateId }) {
   const [page, setPage] = useState(1);
   const [configure, setConfigure] = useState(null);
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const [paymentError, setPaymentError] = useState("");
   const [customer, setCustomer] = useState({ name: "", phone: "" });
   const [pending, setPending] = useState(false);
@@ -151,9 +153,9 @@ function Pos({ duplicateId }) {
     requestId.current = null;
   }
   return (
-    <div className="pos-workspace pb-20 lg:pb-0">
+    <div className="pos-workspace w-full min-w-0 max-w-full pb-20 lg:pb-0">
       <PageHeading title="New Sale" description="Fresh picks. Fast checkout." />
-      <div className="pos-layout grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px] min-[1400px]:grid-cols-[minmax(0,1fr)_390px]">
+      <div className="pos-layout grid w-full min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px] min-[1400px]:grid-cols-[minmax(0,1fr)_390px]">
         <ProductBrowser
           products={products}
           categories={categories}
@@ -184,17 +186,10 @@ function Pos({ duplicateId }) {
       <button
         type="button"
         className="pos-mobile-summary fixed bottom-4 left-4 right-4 z-20 flex min-h-12 items-center justify-between rounded-xl bg-[#245b3a] px-4 text-sm font-semibold text-white shadow-lg lg:hidden"
-        onClick={() => {
-          const panel = document.getElementById("current-sale");
-          panel?.scrollIntoView({
-            behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
-              .matches
-              ? "instant"
-              : "smooth",
-            block: "start",
-          });
-          panel?.focus({ preventScroll: true });
-        }}
+        aria-haspopup="dialog"
+        aria-expanded={cartOpen}
+        aria-label={`View cart, ${cart.items.reduce((sum, item) => sum + item.quantity, 0)} items, ${formatCurrency(totals?.total)}`}
+        onClick={() => setCartOpen(true)}
       >
         <span className="flex items-center gap-2">
           <ShoppingBasket size={18} />
@@ -206,9 +201,14 @@ function Pos({ duplicateId }) {
         </span>
         <span className="flex items-center gap-1">
           View cart
-          <ArrowDown size={16} />
+          <ChevronUp size={16} />
         </span>
       </button>
+      {cartOpen && <MobileCartSheet onClose={() => setCartOpen(false)} cartProps={{
+        cart, user, settings, pending, totals, calculationError,
+        onProceed: () => { setPaymentError(""); setPaymentOpen(true); },
+        onClear: () => setClearing(true),
+      }} />}
       {configure && (
         <ConfigureProduct
           product={configure}

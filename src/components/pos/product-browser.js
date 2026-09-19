@@ -19,7 +19,7 @@ export default function ProductBrowser({
   const visible =
     products.data?.items.filter((product) => product.categoryId?.active) || [];
   return (
-    <section className="min-w-0" aria-label="Product menu">
+    <section className="w-full min-w-0 max-w-full" aria-label="Product menu">
       <div className="relative">
         <Search
           size={19}
@@ -75,7 +75,7 @@ export default function ProductBrowser({
       )}
       <Notice {...products} retry={products.refresh}>
         {visible.length ? (
-          <div className="pos-product-grid grid grid-cols-2 gap-3.5 min-[1100px]:grid-cols-3 min-[1400px]:grid-cols-4 min-[1800px]:grid-cols-5">
+          <div className="pos-product-grid grid w-full min-w-0 grid-cols-2 gap-3.5 min-[1100px]:grid-cols-3 min-[1400px]:grid-cols-4 min-[1800px]:grid-cols-5">
             {visible.map((product) => (
               <ProductCard
                 key={product._id}
@@ -110,11 +110,11 @@ function ProductCard({ product, pending, select, count }) {
     <button
       type="button"
       disabled={pending || product.available === false}
-      className="pos-product-card group relative flex min-w-0 flex-col rounded-xl border border-[#e3e8e0] bg-white p-3 text-left transition duration-150 hover:border-[#8aaa79] hover:shadow-sm active:scale-[.99]"
+      className="pos-product-card group relative flex w-full min-w-0 max-w-full flex-col rounded-xl border border-[#e3e8e0] bg-white p-3 text-left transition duration-150 hover:border-[#8aaa79] hover:shadow-sm active:scale-[.99]"
       onClick={() => select(product)}
     >
-      <div className="relative mb-3 aspect-[4/3] w-full overflow-hidden rounded-lg bg-[#f0f4ec]">
-        <ProductImage src={product.imageUrl} />
+      <div className="relative mb-3 aspect-[4/3] w-full min-w-0 shrink-0 overflow-hidden rounded-lg bg-white lg:aspect-square">
+        <ProductImage src={product.imageUrl} desktopFit="cover" />
         {product.available === false && (
           <span className="absolute inset-x-0 bottom-0 bg-[#fff0df] p-1.5 text-center text-xs font-semibold text-[#93501c]">
             Sold Out
