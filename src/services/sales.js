@@ -21,6 +21,7 @@ import { transaction } from "./settings.js";
 import { formatInvoiceNumber } from "../lib/invoice-number.js";
 import { normalizePayment, paymentGroups } from "../lib/payments.js";
 import { processLoyaltySale, redemptionFor, reverseLoyaltyForSale } from "./loyalty.js";
+import { salesHistoryPage } from "../lib/sales-history-query.js";
 
 export async function sales(request, recordId) {
   const user = await requireUser();
@@ -77,16 +78,13 @@ export async function sales(request, recordId) {
       query.status = url.searchParams.get("status");
     const includeSummary = url.searchParams.get("summary") === "true";
     const [items, total, cashiers, aggregates] = await Promise.all([
-      Sale.find(query)
-        .sort({ createdAt: -1, _id: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      salesHistoryPage(query, { skip, limit }),
       Sale.countDocuments(query),
       User.find({}).select("name").limit(500).lean(),
       includeSummary
         ? Sale.aggregate([
             { $match: query },
+            { $project: { status: 1, total: 1, paymentMethod: 1, payments: 1 } },
             {
               $facet: {
                 totals: [

@@ -13,7 +13,7 @@
 .settings-modern .sm-results button { display: flex; justify-content: space-between; align-items: center; gap: 16px; border: 0; padding: 12px; width: 100%; background: white; text-align: left; font-size: 12px; border-radius: 6px; }
 .settings-modern .sm-results button:hover { background: #f1f7ec; }
 .settings-modern .sm-results small { color: #68766e; }
-.settings-modern .sm-overview { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; margin-bottom: 24px; }
+.settings-modern .sm-overview { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-bottom: 24px; }
 .settings-modern .sm-overview button { display: flex; align-items: center; gap: 12px; padding: 16px; min-width: 0; min-height: 76px; background: #fff; border: 1px solid #e2e8e0; border-radius: 12px; text-align: left; }
 .settings-modern .sm-overview svg { color: var(--sm-green); flex-shrink: 0; }
 .settings-modern .sm-overview span { display: grid; gap: 5px; min-width: 0; }

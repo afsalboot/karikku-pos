@@ -91,6 +91,7 @@ const schema = new Schema(
 );
 schema.add({ statusChangedSessionId: ref("DaySession", false) });
 schema.index({ createdAt: -1 });
+schema.index({ createdAt: -1, _id: -1 });
 schema.index({ paymentMethod: 1, createdAt: -1 });
 schema.index({ daySessionId: 1, status: 1 });
 schema.index({ statusChangedSessionId: 1 });

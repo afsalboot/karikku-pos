@@ -3,16 +3,19 @@
 import { useEffect, useRef } from "react";
 import { receiptDefaults } from "@/lib/settings-config";
 import { useReactToPrint } from "react-to-print";
-import { Printer, Plus } from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/client";
+import { Printer, Plus, MapPin, Phone } from "lucide-react";
+import { formatCurrency } from "@/lib/client";
 import Modal from "@/components/modal";
 import PaymentBreakdown from "./payment-breakdown";
 import { useData } from "@/hooks/useData";
 import { printThermalReceipt } from "@/lib/receipt-print";
+import ThermalReceiptPrinter from "./thermal-receipt-printer";
 export function Receipt({ sale, contentRef, loyaltyEnabled = false }) {
   const preferences = { ...receiptDefaults, ...sale.business.receipt };
   const showLoyalty = preferences.showLoyalty && loyaltyEnabled;
-  const receiptDate = formatDate(sale.createdAt).replace(",", " •");
+  const createdAt = new Date(sale.createdAt);
+  const receiptDate = createdAt.toLocaleDateString("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric" });
+  const receiptTime = createdAt.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true });
   return (
     <article
       ref={contentRef}
@@ -20,46 +23,44 @@ export function Receipt({ sale, contentRef, loyaltyEnabled = false }) {
       style={{ width: sale.business.receiptSize || "80mm" }}
     >
       <header className="receipt-header">
-        {preferences.showLogo && sale.business.logo && (
-          <img
-            src={sale.business.logo}
-            alt="Shop logo"
-            width="70"
-            height="70"
-          />
-        )}
+        {preferences.showLogo && <div className="receipt-brand"><img src="/receipt-logo.jpeg" alt="Karikku Juice Shop" width="1024" height="1536" /></div>}
+        {!preferences.showLogo && <h2>Karikku Juice Shop</h2>}
+        <p className="receipt-address"><MapPin size={17} aria-hidden="true" /><span>Thrissur Rd, near Mars Theatre,<br />Changaramkulam, Kerala 679591, India</span></p>
+        <p className="receipt-phone"><Phone size={17} aria-hidden="true" /><span>Ph 9526532437</span></p>
       </header>
       <hr />
-      <div className="receipt-meta"><strong>RECEIPT</strong><strong>{sale.status === "COMPLETED" ? "PAID" : sale.status}</strong></div>
-      <p className="receipt-number">{sale.invoiceNumber}</p>
-      <p className="receipt-date">{receiptDate}</p>
+      <p className="receipt-number">No: {sale.invoiceNumber}</p>
+      {sale.status !== "COMPLETED" && <p className="receipt-status">{sale.status}</p>}
+      <p className="receipt-date">Date <span>: {receiptDate}</span></p>
+      <p className="receipt-date">Time <span>: {receiptTime}</span></p>
       {preferences.showCustomer && sale.customer && (
         <>
           <p>Customer: {sale.customer.name}</p>
           <p>Phone: {sale.customer.phone}</p>
         </>
       )}
-      {preferences.showCashier && sale.cashier?.name && <p>Cashier: {sale.cashier.name}</p>}
-      <div className="receipt-columns"><span>ITEM / QTY × RATE</span><span>AMOUNT</span></div>
+      {preferences.showCashier && sale.cashier?.name && <p className="receipt-date">Cashier <span>: {sale.cashier.name}</span></p>}
+      <div className="receipt-columns"><span>NO.</span><span>ITEM / QTY × RATE</span><span>AMOUNT</span></div>
       {sale.items.map((item, index) => (
         <section className="receipt-item" key={index}>
-          <strong>{item.productName}</strong>
+          <span className="receipt-item-number">{index + 1}</span>
+          <div className="receipt-item-description"><strong>{item.productName}</strong>
           {item.variant && <p>{item.variant.name}</p>}
           <div className="receipt-item-pricing">
             <span>
               {item.quantity} × {formatCurrency(item.unitPrice)}
             </span>
-            <span>{formatCurrency(item.quantity * item.unitPrice)}</span>
           </div>
           {(item.addons || []).map((addon, i) => (
             <div className="receipt-item-addon" key={i}>
               <span>
                 + {addon.name} ({item.quantity})
               </span>
-              <span>{formatCurrency(addon.price * item.quantity)}</span>
+              <span>{formatCurrency(addon.price)} each</span>
             </div>
           ))}
-          {item.note && <p>Note: {item.note}</p>}
+          {item.note && <p>Note: {item.note}</p>}</div>
+          <span className="receipt-item-amount">{formatCurrency(item.lineTotal ?? item.quantity * (item.unitPrice + (item.addons || []).reduce((sum, addon) => sum + addon.price, 0)))}</span>
         </section>
       ))}
       <hr />
@@ -83,10 +84,12 @@ export function Receipt({ sale, contentRef, loyaltyEnabled = false }) {
         <strong>TOTAL</strong>
         <strong>{formatCurrency(sale.total)}</strong>
       </div>
-      {preferences.showPayment && <PaymentBreakdown sale={sale} />}
+      {preferences.showPayment && <PaymentBreakdown sale={sale} showAmountPaid />}
       {showLoyalty && sale.loyaltySummary && <section className="receipt-loyalty">{sale.loyaltySummary.cashbackEarned > 0 && <p>Cashback earned: {formatCurrency(sale.loyaltySummary.cashbackEarned)}</p>}{sale.loyaltySummary.stampEarned > 0 && <p>Stamps earned: {sale.loyaltySummary.stampEarned}</p>}{sale.loyaltySummary.walletRedeemed > 0 && <p>Wallet used: {formatCurrency(sale.loyaltySummary.walletRedeemed)}</p>}{sale.loyaltySummary.rewardsUnlocked?.length > 0 && <p>Rewards earned: {sale.loyaltySummary.rewardsUnlocked.join(", ")}</p>}</section>}
       <hr />
-      <footer>Thank you!<br />Visit again</footer>
+      <footer>{sale.business.footer && !/^Thank you[.!]?\s*Visit again[.!]?$/i.test(sale.business.footer.trim())
+        ? <span>{sale.business.footer}</span>
+        : <><strong>Thank you!</strong><span>Visit again</span></>}</footer>
     </article>
   );
 }
@@ -110,6 +113,10 @@ export function ReceiptModal({ sale, onClose, success = false, autoPrint = false
     print: printThermalReceipt,
   });
   useEffect(()=>{if(autoPrint && !settings.loading && !started.current){started.current=true;print();}},[autoPrint,print,settings.loading]);
+  const renderReceipt = invoice => <>
+    <Receipt sale={invoice} loyaltyEnabled={settings.data?.loyaltyEnabled === true} />
+    {Array.from({length:Math.max(0,Math.min(5,invoice.business.receipt?.copies||1)-1)},(_,i)=><div className="receipt-extra-copy" key={i}><Receipt sale={invoice} loyaltyEnabled={settings.data?.loyaltyEnabled === true}/></div>)}
+  </>;
   return (
     <Modal
       title={success ? "Payment Successful" : sale.invoiceNumber}
@@ -118,16 +125,9 @@ export function ReceiptModal({ sale, onClose, success = false, autoPrint = false
       <div
         className={`receipt-preview ${success ? "payment-success-preview" : ""}`}
       >
-        {success && (
-          <div className="invoice-printer" aria-hidden="true">
-            <Printer size={22} />
-            <span />
-          </div>
-        )}
-        <div className={success ? "invoice-print-sheet" : undefined} ref={contentRef}>
-          <Receipt sale={sale} loyaltyEnabled={settings.data?.loyaltyEnabled === true} />
-          {Array.from({length:Math.max(0,Math.min(5,sale.business.receipt?.copies||1)-1)},(_,i)=><div className="receipt-extra-copy" key={i}><Receipt sale={sale} loyaltyEnabled={settings.data?.loyaltyEnabled === true}/></div>)}
-        </div>
+        {success
+          ? <ThermalReceiptPrinter key={sale._id || sale.invoiceNumber} invoice={sale} renderReceipt={renderReceipt} contentRef={contentRef} />
+          : <div ref={contentRef}>{renderReceipt(sale)}</div>}
       </div>
       <footer className="modal-footer">
         <button

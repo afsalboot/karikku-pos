@@ -1,6 +1,6 @@
 import { salePayments, paymentLabel } from "@/lib/payments";
 import { formatCurrency } from "@/lib/client";
-export default function PaymentBreakdown({ sale }) {
+export default function PaymentBreakdown({ sale, showAmountPaid = false }) {
   const payments = salePayments(sale);
   const isSplitPayment = sale.paymentMethod === "Split";
   return (
@@ -18,6 +18,7 @@ export default function PaymentBreakdown({ sale }) {
           <span>{formatCurrency(p.amount)}</span>
         </div>
       ))}
+      {showAmountPaid && <div className="receipt-payment-row"><span>Amount Paid</span><span>{formatCurrency(payments.reduce((sum, payment) => sum + payment.amount, 0))}</span></div>}
       {sale.cashReceived !== undefined && (
         <>
           <div className="receipt-payment-row">

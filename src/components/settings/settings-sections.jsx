@@ -1,15 +1,9 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
-import { Banknote, CalendarDays, ChevronDown, CreditCard, Download, Gift, ImagePlus, Info, Printer, Smartphone, Ticket, WalletCards } from "lucide-react";
+import { Banknote, CalendarDays, ChevronDown, CreditCard, Download, Gift, Info, Printer, Smartphone, Ticket, WalletCards } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency as money } from "@/lib/client";
 import { SettingsCard as Card, FormField as Field, ToggleRow, Switch, useSettingsDraft } from "./settings-ui";
-export function BusinessSettings() {
- const {draft,set}=useSettingsDraft();
- function upload(e) {const file=e.target.files?.[0];if(!file)return;if(!["image/png","image/jpeg","image/webp"].includes(file.type)||file.size>250000){toast.error("Choose a PNG, JPG or WebP image up to 250 KB.");return;}const reader=new FileReader();reader.onload=()=>set("logo",reader.result);reader.onerror=()=>toast.error("Unable to read this image");reader.readAsDataURL(file);e.target.value="";}
- return <Card title="Business Information" description="Information printed on receipts and used throughout the POS."><div className="sm-logo" data-setting="logo"><div className="sm-logo-preview">{draft.logo?<img src={draft.logo} alt="Business logo"/>:<ImagePlus size={28}/>}</div><div><strong>Business Logo</strong><div className="sm-inline-actions"><label className="button secondary sm-upload">Change logo<input type="file" accept="image/png,image/jpeg,image/webp" onChange={upload}/></label><button className="sm-text-button" disabled={!draft.logo} onClick={()=>set("logo","")}>Remove logo</button></div><small>Square PNG / JPG recommended · maximum 250 KB</small></div></div><div className="sm-grid"><Field path="businessName" label="Business Name" required max={100}/><Field path="phone" label="Phone Number" type="tel" max={30}/><Field path="email" label="Email Address" type="email" max={100}/><Field path="currency" label="Currency" options={[["INR","INR · Indian Rupee (₹)"]]}/><Field path="address" label="Address" type="textarea" max={300} full/></div><p className="sm-info"><Info size={16}/>These details may appear on printed receipts and invoices.</p></Card>;
-}
 const receiptToggles=[["showLogo","Show business logo"],["showCustomer","Show customer details"],["showCashier","Show cashier / user name"],["showPayment","Show payment method"],["showLoyalty","Show loyalty summary"]];
 export function InvoiceSettings({preview,now,onPreview}) {
  const {draft}=useSettingsDraft(),sequence=Math.max(Number(draft.startingNumber)||1,(draft.lastIssuedSequence||0)+1);
