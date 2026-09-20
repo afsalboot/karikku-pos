@@ -49,6 +49,13 @@ try {
     const layout = await page.evaluate(() => ({ width: innerWidth, documentWidth: document.documentElement.scrollWidth, cards: [...document.querySelectorAll('.pos-product-card')].map(el => { const r = el.getBoundingClientRect(); return { left: r.left, right: r.right }; }) }));
     assert.ok(layout.documentWidth <= width + 1, `No document overflow beyond subpixel rounding at ${width}px: ${JSON.stringify(layout)}`);
     assert.ok(layout.cards.every(card => card.left >= 0 && card.right <= width), `Product cards fit at ${width}px`);
+    const photo = await page.locator('.pos-product-card img').first().evaluate(img => {
+      const bounds = img.getBoundingClientRect();
+      const card = img.closest('.pos-product-card').getBoundingClientRect();
+      return { width: bounds.width, height: bounds.height, cardWidth: card.width, ratio: img.naturalWidth / img.naturalHeight };
+    });
+    assert.ok(Math.abs(photo.width - (photo.cardWidth - 2)) < 1, 'Photo spans the card without inset side gaps');
+    assert.ok(Math.abs(photo.width / photo.height - photo.ratio) < .01, 'Full photo keeps its natural proportions without cropping');
     await page.screenshot({ path: `test-results/product-grid-${width}.png` });
   }
   await page.setViewportSize({ width: 390, height: 844 });

@@ -113,7 +113,7 @@ function ProductCard({ product, pending, select, count }) {
       className="pos-product-card group relative flex w-full min-w-0 max-w-full flex-col rounded-xl border border-[#e3e8e0] bg-white p-3 text-left transition duration-150 hover:border-[#8aaa79] hover:shadow-sm active:scale-[.99]"
       onClick={() => select(product)}
     >
-      <div className="relative mb-3 aspect-[4/3] w-full min-w-0 shrink-0 overflow-hidden rounded-lg bg-white lg:aspect-square">
+      <div className="pos-product-media relative mb-3 aspect-[4/3] w-full min-w-0 shrink-0 overflow-hidden rounded-lg bg-white lg:aspect-square">
         <ProductImage src={product.imageUrl} desktopFit="cover" />
         {product.available === false && (
           <span className="absolute inset-x-0 bottom-0 bg-[#fff0df] p-1.5 text-center text-xs font-semibold text-[#93501c]">
@@ -130,6 +130,7 @@ function ProductCard({ product, pending, select, count }) {
           </span>
         )}
       </div>
+      <div className="pos-product-details flex w-full min-w-0 flex-1 flex-col">
       <strong className="line-clamp-2 text-sm leading-5 text-[#162219]">
         {product.name}
       </strong>
@@ -145,6 +146,7 @@ function ProductCard({ product, pending, select, count }) {
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#eaf2e5] text-[#245b3a] transition-colors group-hover:bg-[#245b3a] group-hover:text-white">
           <Plus size={18} aria-hidden="true" />
         </span>
+      </div>
       </div>
     </button>
   );

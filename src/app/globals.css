@@ -3524,6 +3524,12 @@ a {
 }
 @media (max-width: 1023px) {
   .pos-layout > .pos-cart { display: none; }
+  .pos-product-card { padding: 0; overflow: hidden; }
+  .pos-product-card .pos-product-media { margin-bottom: 0; border-radius: 0; }
+  .pos-product-media:has(img) { aspect-ratio: auto; }
+  .pos-product-media:has(img) > div { height: auto; display: block; }
+  .pos-product-media img { position: static; display: block; width: 100%; height: auto; max-width: 100%; }
+  .pos-product-card .pos-product-details { padding: 10px 12px; }
   .pos-workspace { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
   .pos-mobile-summary { bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 3px 10px rgb(25 69 43 / 12%); }
 }
