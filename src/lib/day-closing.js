@@ -1,4 +1,12 @@
 import { cents, money } from "./calculations.js";
+export const denominations = [500, 200, 100, 50, 20, 10];
+export const movementCategories = {
+  IN: ["Float Added", "External Cash Added", "Cash Correction"],
+  OUT: ["Cash Removed", "Bank Deposit", "Petty Cash Withdrawal", "Owner Withdrawal", "Cash Correction"],
+};
+export const differenceReasons = ["Counting Error", "Unrecorded Cash Sale", "Unrecorded Cash Expense", "Change / Rounding Difference", "Opening Cash Error", "Other"];
+export const denominationTotal = (counts) => money(denominations.reduce((sum, d) => sum + d * 100 * Number(counts[d] || 0), 0) + cents(Number(counts.coins || 0)));
+export const reconciliationState = (day) => day.expectedCash < 0 ? "NEEDS_REVIEW" : !day.difference ? "BALANCED" : day.difference < 0 ? "SHORT" : "OVER";
 
 export function validCash(value) {
   return (
@@ -22,11 +30,14 @@ export function validSession(day) {
       day.cashSales,
       day.cashExpenses,
       day.cashRefunds ?? 0,
+      day.cashIn ?? 0,
+      day.cashOut ?? 0,
       day.expectedCash,
       day.totalSales,
     ].every(Number.isFinite) &&
     cents(day.expectedCash) ===
       cents(day.openingCash) +
+        cents(day.cashIn ?? 0) - cents(day.cashOut ?? 0) +
         cents(day.cashSales) -
         cents(day.cashExpenses) -
         cents(day.cashRefunds ?? 0),
@@ -50,6 +61,8 @@ export function historyFilter(params) {
   if (status === "balanced") filter.difference = 0;
   if (status === "short") filter.difference = { $lt: 0 };
   if (status === "over") filter.difference = { $gt: 0 };
+  if (["balanced", "short", "over"].includes(status)) filter.expectedCash = { $gte: 0 };
+  if (status === "review") filter.expectedCash = { $lt: 0 };
   const search = params.get("search")?.trim().slice(0, 100);
   if (search) {
     const regex = {
@@ -61,6 +74,8 @@ export function historyFilter(params) {
       "closedBy.name",
       "closingNote",
       "differenceReason",
+      "differenceDescription",
+      "sessionCode",
     ].map((key) => ({ [key]: regex }));
   }
   return filter;

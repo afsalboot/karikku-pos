@@ -3,6 +3,7 @@ import { settingsWithDefaults } from "../lib/settings-config.js";
 import { connectDB } from "../lib/mongodb.js";
 import Setting, { defaults } from "../models/Setting.js";
 import DaySession from "../models/DaySession.js";
+import CashMovement from "../models/CashMovement.js";
 import Sale from "../models/Sale.js";
 import User from "../models/User.js";
 import Product from "../models/Product.js";
@@ -19,6 +20,7 @@ export async function initialize() {
       [
         Setting,
         DaySession,
+        CashMovement,
         Sale,
         User,
         Product,

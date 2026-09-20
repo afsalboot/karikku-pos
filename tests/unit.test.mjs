@@ -41,7 +41,14 @@ test("loyalty configuration rejects invalid rates and periods without losing dis
   assert.equal(loyaltySettingsSchema.parse({...defaults.loyalty,enabled:false}).wallet.cashbackPercentage,defaults.loyalty.wallet.cashbackPercentage);
   assert.equal(discountDefaults.maximumPercentage,100);
 });
-import { validCash, validSession, cashDifference, historyFilter } from "../src/lib/day-closing.js";
+import { validCash, validSession, cashDifference, historyFilter, denominationTotal, reconciliationState } from "../src/lib/day-closing.js";
+test("drawer denominations retain paise and negative balances require review", () => {
+  assert.equal(denominationTotal({500: 5, 200: 3, 100: 4, 50: 2, 20: 3, 10: 4, coins: 0.25}), 3700.25);
+  assert.equal(reconciliationState({expectedCash: -100, difference: 100}), "NEEDS_REVIEW");
+  assert.equal(reconciliationState({expectedCash: 100, difference: 0}), "BALANCED");
+  assert.deepEqual(historyFilter(new URLSearchParams({balance: "review"})).expectedCash, {$lt: 0});
+  assert.deepEqual(historyFilter(new URLSearchParams({balance: "over"})).expectedCash, {$gte: 0});
+});
 test("cash reconciliation rejects invalid counts and calculates exact paise differences", () => {
   for (const value of ["", "-1", "NaN", "Infinity", "1e2", "1.001", "1000001"]) assert.equal(validCash(value), false);
   for (const value of ["0", "0.01", "2900.00", "1000000"]) assert.equal(validCash(value), true);

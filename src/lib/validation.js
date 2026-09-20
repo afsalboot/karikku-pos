@@ -246,16 +246,26 @@ export const settingSchema = z
     path: ["businessName"],
   });
 export const sessionSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("open"), openingCash: amount }).strict(),
+  z.object({ action: z.literal("open"), openingCash: amount, openingAdjustmentReason: z.string().trim().max(300).optional() }).strict(),
+  z.object({ action: z.literal("movement"), sessionId: id, requestId: z.string().uuid(), type: z.enum(["IN", "OUT"]), category: text(80), amount: amount.refine(n => n > 0, "Enter a positive amount"), note: z.string().trim().max(500).default("") }).strict(),
   z
     .object({
       action: z.literal("close"),
       sessionId: id,
       actualCash: amount,
       expectedCash: z.number().finite().optional(),
+      reviewToken: z.string().regex(/^[a-f0-9]{64}$/).optional(),
       differenceReason: z.string().trim().max(80).optional(),
       closingNote: z.string().trim().max(500).optional(),
       denominationCount: amount.optional(),
+      denominationBreakdown: z.object({
+        "500": z.number().int().min(0).max(100000), "200": z.number().int().min(0).max(100000),
+        "100": z.number().int().min(0).max(100000), "50": z.number().int().min(0).max(100000),
+        "20": z.number().int().min(0).max(100000), "10": z.number().int().min(0).max(100000), coins: amount,
+      }).strict().optional(),
+      cashRemovedAtClosing: amount.default(0),
+      closingFloat: amount.optional(),
+      differenceDescription: z.string().trim().max(300).optional(),
     })
     .strict(),
 ]);

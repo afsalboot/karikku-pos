@@ -728,6 +728,27 @@ a {
   margin-top: 4px;
   font-size: 11px;
 }
+.profile-dropdown { position: relative; flex-shrink: 0; }
+.profile-dropdown summary { cursor: pointer; list-style: none; border-radius: 8px; min-height: 44px; }
+.profile-dropdown summary::-webkit-details-marker { display: none; }
+.profile-dropdown summary:focus-visible { outline: 2px solid #568143; outline-offset: 4px; }
+.profile-options {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 60;
+  width: min(230px, calc(100vw - 32px));
+  padding: 6px;
+  background: white;
+  border: 1px solid #e1e7df;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px #173d2520;
+}
+.profile-identity { display: grid; gap: 4px; padding: 10px; border-bottom: 1px solid #e1e7df; margin-bottom: 4px; overflow-wrap: anywhere; }
+.profile-identity small { color: #74806d; }
+.profile-options > a, .profile-options > button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 10px; border: 0; border-radius: 7px; background: transparent; color: #244736; font-size: 13px; text-align: left; text-decoration: none; cursor: pointer; }
+.profile-options > a:hover, .profile-options > button:hover, .profile-options > a[aria-current="page"] { background: #edf3e5; }
+.profile-options > button:disabled { opacity: .6; cursor: wait; }
 .avatar {
   display: grid;
   place-items: center;

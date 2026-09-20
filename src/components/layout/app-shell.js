@@ -13,6 +13,7 @@ import {
   PanelLeftOpen,
   ChartNoAxesCombined,
   CalendarCheck,
+  ChevronDown,
   Users,
   ContactRound,
   Settings,
@@ -40,7 +41,6 @@ const navigation = [
     items: [
       ["Expenses", "/expenses", WalletCards],
       ["Reports", "/reports", ChartNoAxesCombined],
-      ["Day Closing", "/day-closing", CalendarCheck],
     ],
   },
   {
@@ -53,6 +53,7 @@ const navigation = [
 ];
 const links = [
   ["New Sale", "/pos", ShoppingBasket],
+  ["Day Closing", "/day-closing", CalendarCheck],
   ...navigation.flatMap((group) => group.items),
 ];
 const isActive = (pathname, href) =>
@@ -65,6 +66,28 @@ export default function AppShell({ user, settings, children }) {
   const [expanded, setExpanded] = useState(false);
   const sidebarRef = useRef(null);
   const triggerRef = useRef(null);
+  const profileRef = useRef(null);
+  useEffect(() => {
+    function dismiss(event) {
+      const profile = profileRef.current;
+      if (!profile?.open) return;
+      if (event.type === "keydown") {
+        if (event.key !== "Escape") return;
+        profile.open = false;
+        profile.querySelector("summary")?.focus();
+      } else if (!profile.contains(event.target)) {
+        profile.open = false;
+      }
+    }
+    document.addEventListener("pointerdown", dismiss);
+    document.addEventListener("focusin", dismiss);
+    document.addEventListener("keydown", dismiss);
+    return () => {
+      document.removeEventListener("pointerdown", dismiss);
+      document.removeEventListener("focusin", dismiss);
+      document.removeEventListener("keydown", dismiss);
+    };
+  }, []);
   useEffect(() => {
     if (!open) return;
     const sidebar = sidebarRef.current;
@@ -187,21 +210,6 @@ export default function AppShell({ user, settings, children }) {
               </div>
             ))}
           </nav>
-          <div className="sidebar-footer">
-            <button
-              className="logout"
-              aria-label={pending ? "Signing out" : "Logout"}
-              title="Logout"
-              disabled={pending}
-              onClick={logout}
-            >
-              <LogOut size={19} />
-              <span className="nav-label">
-                {pending ? "Signing out…" : "Logout"}
-              </span>
-            </button>
-            <small className="sidebar-caption">Karikku Juice POS</small>
-          </div>
         </aside>
         {open && (
           <button
@@ -239,7 +247,8 @@ export default function AppShell({ user, settings, children }) {
             </button>
             <strong>{pathname === "/pos" ? "Point of Sale" : title}</strong>
             <NetworkStatus />
-            <div className="current-user">
+            <details className="profile-dropdown" ref={profileRef} key={pathname}>
+              <summary className="current-user" aria-label="Profile options">
               <span>
                 {user.name}
                 <small>
@@ -247,7 +256,23 @@ export default function AppShell({ user, settings, children }) {
                 </small>
               </span>
               <span className="avatar">{user.name.slice(0, 1)}</span>
-            </div>
+              <ChevronDown size={14} aria-hidden="true" />
+              </summary>
+              <div className="profile-options">
+                <div className="profile-identity">
+                  <strong>{user.name}</strong>
+                  <small>{user.role === "ADMIN" ? "Administrator" : "Cashier"}</small>
+                </div>
+                {permitted(["Day Closing", "/day-closing"]) && (
+                  <Link href="/day-closing" aria-current={isActive(pathname, "/day-closing") ? "page" : undefined} onClick={() => { profileRef.current.open = false; }}>
+                    <CalendarCheck size={18} aria-hidden="true" /> Day Closing
+                  </Link>
+                )}
+                <button type="button" disabled={pending} onClick={logout}>
+                  <LogOut size={18} aria-hidden="true" /> {pending ? "Signing out…" : "Logout"}
+                </button>
+              </div>
+            </details>
           </header>
           <div className="app-page">{children}</div>
         </div>
