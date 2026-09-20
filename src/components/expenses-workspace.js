@@ -1,4 +1,6 @@
 "use client";
+import DateInput from "@/components/ui/date-input";
+import Select from "@/components/ui/select";
 
 import { useEffect, useRef, useState } from "react";
 import {
@@ -428,10 +430,11 @@ function ExpensePeriodControl({ period, choosePeriod, range, apply }) {
         >
           <label>
             From Date
-            <input
+            <DateInput
               type="date"
               required
               value={draft.from}
+              rangeStart={draft.from} rangeEnd={draft.to}
               max={draft.to}
               onChange={(event) =>
                 setDraft({ ...draft, from: event.target.value })
@@ -440,10 +443,11 @@ function ExpensePeriodControl({ period, choosePeriod, range, apply }) {
           </label>
           <label>
             To Date
-            <input
+            <DateInput
               type="date"
               required
               value={draft.to}
+              rangeStart={draft.from} rangeEnd={draft.to}
               min={draft.from}
               onChange={(event) =>
                 setDraft({ ...draft, to: event.target.value })
@@ -479,7 +483,7 @@ function ExpenseFilters({
     <>
       <label>
         Category
-        <select
+        <Select
           aria-label="Expense category"
           value={category}
           onChange={(event) => setCategory(event.target.value)}
@@ -490,11 +494,11 @@ function ExpenseFilters({
               {item.name}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <label>
         Payment
-        <select
+        <Select
           aria-label="Expense payment"
           value={payment}
           onChange={(event) => setPayment(event.target.value)}
@@ -505,11 +509,11 @@ function ExpenseFilters({
               {paymentLabel(method)}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <label>
         Added By
-        <select
+        <Select
           aria-label="Created by"
           value={createdBy}
           onChange={(event) => setCreatedBy(event.target.value)}
@@ -520,7 +524,7 @@ function ExpenseFilters({
               {creator.name || "Unknown user"}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       {filtersActive && (
         <button className="expense-clear-button" onClick={clearFilters}>
@@ -876,7 +880,7 @@ function ExpensePagination({ data, page, setPage, limit, setLimit }) {
       </span>
       <label className="expense-page-size">
         Rows per page
-        <select
+        <Select
           value={limit}
           onChange={(event) => setLimit(Number(event.target.value))}
         >
@@ -885,7 +889,7 @@ function ExpensePagination({ data, page, setPage, limit, setLimit }) {
               {value}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <div>
         <button
@@ -1035,7 +1039,7 @@ function ExpenseFormModal({
                 </div>
               </ExpenseField>
               <ExpenseField label="Expense Date *" error={errors.expenseDate}>
-                <input
+                <DateInput
                   name="expenseDate"
                   type="date"
                   value={form.expenseDate}
@@ -1046,7 +1050,7 @@ function ExpenseFormModal({
               </ExpenseField>
             </div>
             <ExpenseField label="Category *" error={errors.categoryId}>
-              <select
+              <Select
                 name="categoryId"
                 value={form.categoryId}
                 onChange={(event) => handleCategoryChange(event.target.value)}
@@ -1064,7 +1068,7 @@ function ExpenseFormModal({
                   </option>
                 ))}
                 <option value="__new__">+ Add New Category</option>
-              </select>
+              </Select>
             </ExpenseField>
             <ExpenseField label="Description *" error={errors.description}>
               <input

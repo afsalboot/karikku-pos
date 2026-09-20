@@ -1,4 +1,5 @@
 ﻿"use client";
+import Select from "@/components/ui/select";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Plus, Search, MoreHorizontal, RotateCcw, Package } from "lucide-react";
@@ -185,7 +186,7 @@ export default function ProductsWorkspace() {
               onChange={(e) => filter(setQuery, e.target.value)}
             />
           </div>
-          <select
+          <Select
             aria-label="Product category filter"
             value={category}
             onChange={(e) => filter(setCategory, e.target.value)}
@@ -196,8 +197,8 @@ export default function ProductsWorkspace() {
                 {c.name}
               </option>
             ))}
-          </select>
-          <select
+          </Select>
+          <Select
             aria-label="Product status"
             value={status}
             onChange={(e) => filter(setStatus, e.target.value)}
@@ -205,8 +206,8 @@ export default function ProductsWorkspace() {
             <option value="">All Statuses</option>
             <option value="true">Active</option>
             <option value="false">Inactive</option>
-          </select>
-          <select
+          </Select>
+          <Select
             aria-label="Product availability filter"
             value={availability}
             onChange={(e) => filter(setAvailability, e.target.value)}
@@ -214,7 +215,7 @@ export default function ProductsWorkspace() {
             <option value="">All Availability</option>
             <option value="true">Available</option>
             <option value="false">Sold Out</option>
-          </select>
+          </Select>
           <button className="button secondary" onClick={reset}>
             <RotateCcw size={14} />
             Reset
@@ -384,7 +385,7 @@ export default function ProductsWorkspace() {
               : "Loading products..."}
           </span>
           <div>
-            <select
+            <Select
               aria-label="Products per page"
               value={limit}
               onChange={(e) => filter(setLimit, Number(e.target.value))}
@@ -394,7 +395,7 @@ export default function ProductsWorkspace() {
                   {n} per page
                 </option>
               ))}
-            </select>
+            </Select>
             <button
               className="button secondary"
               disabled={result.loading || page <= 1}

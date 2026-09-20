@@ -1,4 +1,5 @@
 ﻿"use client";
+import Select from "@/components/ui/select";
 import { useCallback, useState } from "react";
 import Link from "next/link";
 import { Search, RotateCcw, MoreHorizontal, Users } from "lucide-react";
@@ -91,7 +92,7 @@ export default function CustomersWorkspace() {
               onChange={(e) => filter(setQuery, e.target.value)}
             />
           </div>
-          <select
+          <Select
             aria-label="Customer type"
             value={type}
             onChange={(e) => filter(setType, e.target.value)}
@@ -99,8 +100,8 @@ export default function CustomersWorkspace() {
             <option value="">All Customers</option>
             <option value="new">New Customers</option>
             <option value="returning">Returning Customers</option>
-          </select>
-          <select
+          </Select>
+          <Select
             aria-label="Last purchase"
             value={lastPurchase}
             onChange={(e) => filter(setLastPurchase, e.target.value)}
@@ -117,8 +118,8 @@ export default function CustomersWorkspace() {
                 {l}
               </option>
             ))}
-          </select>
-          <select
+          </Select>
+          <Select
             aria-label="Sort customers"
             value={sort}
             onChange={(e) => filter(setSort, e.target.value)}
@@ -135,7 +136,7 @@ export default function CustomersWorkspace() {
                 {l}
               </option>
             ))}
-          </select>
+          </Select>
           <button className="button secondary" onClick={reset}>
             <RotateCcw size={14} />
             Reset

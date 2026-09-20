@@ -1,4 +1,6 @@
 "use client";
+import Select from "@/components/ui/select";
+import DateInput from "@/components/ui/date-input";
 import { useMemo, useState } from "react";
 import {
   ResponsiveContainer,
@@ -181,7 +183,7 @@ export default function ReportsAnalytics() {
         <CalendarDays size={18} />
         <label>
           <span>Period</span>
-          <select
+          <Select
             aria-label="Period"
             value={period}
             onChange={(e) => setPreset(e.target.value)}
@@ -193,7 +195,7 @@ export default function ReportsAnalytics() {
             <option value="thisMonth">This Month</option>
             <option value="lastMonth">Last Month</option>
             <option value="custom">Custom Range</option>
-          </select>
+          </Select>
         </label>
         <DateField
           label="From date"
@@ -503,7 +505,7 @@ export default function ReportsAnalytics() {
             title="Product Sales"
             sub="Gross revenue before bill discounts and tax. Product-level discount and net allocations are unavailable."
             controls={
-              <select
+              <Select
                 aria-label="Sort products"
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
@@ -511,7 +513,7 @@ export default function ReportsAnalytics() {
                 <option value="revenue">Sort: revenue</option>
                 <option value="quantity">Sort: quantity</option>
                 <option value="name">Sort: product name</option>
-              </select>
+              </Select>
             }
             rows={products}
             visibleLimit={showAll ? products.length : 10}
@@ -606,7 +608,7 @@ function DateField({ label, value, disabled, onChange }) {
   return (
     <label>
       <span>{label}</span>
-      <input
+      <DateInput
         type="date"
         value={value}
         disabled={disabled}

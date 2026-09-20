@@ -1,4 +1,5 @@
 "use client";
+import Select from "@/components/ui/select";
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -137,7 +138,7 @@ export default function ProductEditor({
             </label>
             <div className="field">
               <label htmlFor="product-category">Category</label>
-              <select
+              <Select
                 id="product-category"
                 required
                 value={form.categoryId}
@@ -156,7 +157,7 @@ export default function ProductEditor({
                     {!category.active ? " (inactive)" : ""}
                   </option>
                 ))}
-              </select>
+              </Select>
               {categoryError && <p role="alert">{categoryError}</p>}
               <button
                 type="button"
@@ -186,13 +187,13 @@ export default function ProductEditor({
               </label>
               <label className="field">
                 Status
-                <select
+                <Select
                   value={form.active ? "active" : "inactive"}
                   onChange={(e) => set("active", e.target.value === "active")}
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
-                </select>
+                </Select>
               </label>
             </div>
             <label className="option-toggle">

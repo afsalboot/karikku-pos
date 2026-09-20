@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import BackupSettings from "./backup-settings";
 import { Banknote, CalendarDays, ChevronDown, CreditCard, Download, Gift, Info, Printer, Smartphone, Ticket, WalletCards } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency as money } from "@/lib/client";
@@ -30,6 +31,6 @@ export function PrintingSettings({onPreview}) {return <Card title="Receipt Print
 export function DataSettings({onReset}) {
  const [exporting,setExporting]=useState(null);
  async function download(kind){setExporting(kind);try{const response=await fetch("/api/settings?export="+kind);if(!response.ok)throw new Error((await response.json()).message||"Unable to export data");const url=URL.createObjectURL(await response.blob()),a=document.createElement("a");a.href=url;a.download="karikku-"+kind+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){toast.error(e.message);}finally{setExporting(null);}}
- return <><Card title="Export Data" description="Download your saved records as CSV files."><div className="sm-export-grid">{["sales","expenses","products","customers"].map(kind=><button key={kind} className="button secondary" disabled={Boolean(exporting)} onClick={()=>download(kind)}><Download size={16}/>{exporting===kind?"Exporting...":"Export "+kind[0].toUpperCase()+kind.slice(1)}</button>)}</div></Card><Card title="Backup" description="Database backup service is not configured."><p>Last backup: <strong>Unavailable</strong></p><p className="sm-info"><Info size={16}/>Cloud backup and restore are unavailable in this installation. CSV exports are available above.</p><button className="button secondary" disabled>Backup unavailable</button></Card><section className="sm-danger"><h2>Reset Settings</h2><p>Restore default preferences. Sales, invoice history and customer balances are retained. Review the defaults before saving.</p><button className="button danger" onClick={onReset}>Reset settings to defaults</button></section></>;
+ return <><Card title="Export Data" description="Download your saved records as CSV files."><div className="sm-export-grid">{["sales","expenses","products","customers"].map(kind=><button key={kind} className="button secondary" disabled={Boolean(exporting)} onClick={()=>download(kind)}><Download size={16}/>{exporting===kind?"Exporting...":"Export "+kind[0].toUpperCase()+kind.slice(1)}</button>)}</div></Card><BackupSettings/><section className="sm-danger"><h2>Reset Settings</h2><p>Restore default preferences. Sales, invoice history and customer balances are retained. Review the defaults before saving.</p><button className="button danger" onClick={onReset}>Reset settings to defaults</button></section></>;
 }
 

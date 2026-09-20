@@ -1,4 +1,6 @@
 "use client";
+import DateInput from "@/components/ui/date-input";
+import Select from "@/components/ui/select";
 import { useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { useData, useDebounce } from "@/hooks/useData";
@@ -53,27 +55,29 @@ export default function SessionHistory({ version }) {
       <div className="day-history-filters">
         <label>
           From
-          <input
+          <DateInput
             type="date"
             aria-label="From date"
             value={filters.from}
+            rangeStart={filters.from} rangeEnd={filters.to}
             max={filters.to || undefined}
             onChange={(e) => filter("from", e.target.value)}
           />
         </label>
         <label>
           To
-          <input
+          <DateInput
             type="date"
             aria-label="To date"
             value={filters.to}
+            rangeStart={filters.from} rangeEnd={filters.to}
             min={filters.from || undefined}
             onChange={(e) => filter("to", e.target.value)}
           />
         </label>
         <label>
           Status
-          <select
+          <Select
             value={filters.balance}
             onChange={(e) => filter("balance", e.target.value)}
           >
@@ -88,7 +92,7 @@ export default function SessionHistory({ version }) {
                 {label}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label>
           Search

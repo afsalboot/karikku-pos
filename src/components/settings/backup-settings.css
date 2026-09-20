@@ -1,0 +1,16 @@
+.backup-settings { min-width: 0; }
+.backup-settings label { display: grid; gap: 7px; margin: 12px 0; font-size: 13px; }
+.backup-settings input, .backup-settings select { width: 100%; min-width: 0; min-height: 42px; }
+.backup-settings small { display: block; color: #6a756c; margin-top: 9px; line-height: 1.5; }
+.backup-label { display: block; margin: 12px 0 7px; font-size: 13px; }
+.backup-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.backup-ready { padding: 14px; border: 1px solid #cee0cd; background: #f6faf4; border-radius: 10px; margin-top: 16px; overflow-wrap: anywhere; }
+.backup-ready a { display: block; margin-top: 8px; }
+.backup-settings .backup-check { display: flex; align-items: flex-start; gap: 10px; }
+.backup-settings .backup-check input { width: 18px; min-height: 18px; flex-shrink: 0; }
+.backup-setup { background: #f7f9f5; border-radius: 10px; padding: 14px; margin: 12px 0; line-height: 1.6; font-size: 13px; overflow-wrap: anywhere; }
+.backup-setup code { font-size: 12px; word-break: break-word; }
+.backup-counts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; }
+.backup-counts div { display: flex; gap: 10px; justify-content: space-between; }
+.backup-counts dd { margin: 0; font-weight: 600; }
+@media (max-width: 600px) { .backup-counts { grid-template-columns: 1fr; } .backup-actions .button { width: 100%; justify-content: center; } }

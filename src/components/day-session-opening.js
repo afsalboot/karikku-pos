@@ -1,4 +1,5 @@
 "use client";
+import Select from "@/components/ui/select";
 import { useState } from "react";
 import { cents } from "@/lib/calculations";
 import { validCash } from "@/lib/day-closing";
@@ -99,7 +100,7 @@ export default function OpenDay({ previous, pending, onOpen }) {
               <>
                 <label>
                   Opening Adjustment Reason *
-                  <select
+                  <Select
                     required
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
@@ -114,7 +115,7 @@ export default function OpenDay({ previous, pending, onOpen }) {
                     ].map((r) => (
                       <option key={r}>{r}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 {reason === "Other" && (
                   <label>

@@ -1,3 +1,4 @@
+import Select from "@/components/ui/select";
 export default function RecordPagination({
   data,
   page,
@@ -20,7 +21,7 @@ export default function RecordPagination({
       </span>
       <div>
         {setLimit && (
-          <select
+          <Select
             aria-label={`${label} per page`}
             value={limit}
             onChange={(e) => {
@@ -33,7 +34,7 @@ export default function RecordPagination({
                 {n} per page
               </option>
             ))}
-          </select>
+          </Select>
         )}
         <button
           className="button secondary"

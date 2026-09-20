@@ -103,7 +103,7 @@ try {
   });
   check(login.status === 200, `Login succeeds: ${login.message}`);
   const cookie = login.response.headers.get("set-cookie").split(";")[0];
-  const admin = await User.findOne({username:"testadmin"});
+  const admin = await User.findOne({username:"testadmin"}).select("+passwordHash");
   await User.create({name:"Cashier Tester",username:"cashiertester",passwordHash:admin.passwordHash,role:"CASHIER",active:true});
   const cashierLogin = await call("/auth/login","POST",{username:"cashiertester",password});
   const cashierCookie = cashierLogin.response.headers.get("set-cookie").split(";")[0];

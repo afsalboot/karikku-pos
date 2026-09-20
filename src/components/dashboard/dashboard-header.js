@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DateInput from "@/components/ui/date-input";
 import { Plus, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { dateBounds } from "@/lib/dates";
@@ -107,20 +108,22 @@ export default function DashboardHeader({
         <form className="dash-custom-range" onSubmit={apply}>
           <label>
             From Date
-            <input
+            <DateInput
               type="date"
               required
               value={draft.from}
+              rangeStart={draft.from} rangeEnd={draft.to} max={draft.to || undefined}
               onChange={(e) => setDraft({ ...draft, from: e.target.value })}
             />
           </label>
           <label>
             To Date
-            <input
+            <DateInput
               type="date"
               required
               min={draft.from}
               value={draft.to}
+              rangeStart={draft.from} rangeEnd={draft.to}
               onChange={(e) => setDraft({ ...draft, to: e.target.value })}
             />
           </label>

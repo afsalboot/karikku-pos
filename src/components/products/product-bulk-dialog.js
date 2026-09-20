@@ -1,4 +1,5 @@
 "use client";
+import Select from "@/components/ui/select";
 import { useState } from "react";
 import Modal from "../modal";
 import { api } from "@/lib/client";
@@ -31,9 +32,9 @@ export default function ProductBulkDialog({ action, selected, categories, onClos
         <p>{deleting ? "Permanently remove these products from the catalog? Existing invoices keep their saved product details. This cannot be undone." : "Choose the fields to apply to every selected product. Other fields keep their current values."}</p>
         <details><summary>Review selected products ({Object.keys(selected).length})</summary><ul>{Object.entries(selected).map(([id, name]) => <li key={id}>{name}</li>)}</ul></details>
         {!deleting && <>
-          <label className="field">Category<select value={changes.categoryId || ""} onChange={e => set("categoryId", e.target.value)}><option value="">Keep current category</option>{categories.filter(c => c.active).map(c => <option key={c._id} value={c._id}>{c.name}</option>)}</select></label>
+          <label className="field">Category<Select value={changes.categoryId || ""} onChange={e => set("categoryId", e.target.value)}><option value="">Keep current category</option>{categories.filter(c => c.active).map(c => <option key={c._id} value={c._id}>{c.name}</option>)}</Select></label>
           <label className="field">Base price (INR)<input type="number" min="0" max="1000000" step="0.01" placeholder="Keep current price" value={changes.basePrice ?? ""} onChange={e => set("basePrice", e.target.value)} /><small>Variant and add-on prices keep their current values.</small></label>
-          {[["active", "Status", "Active", "Inactive"], ["available", "Availability", "Available", "Sold out"], ["special", "Special", "Special", "Regular"]].map(([key, label, yes, no]) => <label className="field" key={key}>{label}<select value={changes[key] === undefined ? "" : String(changes[key])} onChange={e => set(key, e.target.value)}><option value="">Keep current value</option><option value="true">{yes}</option><option value="false">{no}</option></select></label>)}
+          {[["active", "Status", "Active", "Inactive"], ["available", "Availability", "Available", "Sold out"], ["special", "Special", "Special", "Regular"]].map(([key, label, yes, no]) => <label className="field" key={key}>{label}<Select value={changes[key] === undefined ? "" : String(changes[key])} onChange={e => set(key, e.target.value)}><option value="">Keep current value</option><option value="true">{yes}</option><option value="false">{no}</option></Select></label>)}
         </>}
         {error && <p className="form-error" role="alert">{error}</p>}
       </fieldset>

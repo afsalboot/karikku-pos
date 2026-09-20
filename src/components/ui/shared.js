@@ -1,4 +1,6 @@
 "use client";
+import Select from "@/components/ui/select";
+import DateInput from "@/components/ui/date-input";
 import { useState } from "react";
 import { subDays, startOfWeek, startOfMonth, format } from "date-fns";
 import { businessDate } from "@/lib/dates";
@@ -117,7 +119,7 @@ export function DateRangePicker({ value, onChange }) {
   }
   return (
     <div className="date-range">
-      <select
+      <Select
         aria-label="Date range"
         value={preset}
         onChange={(e) => choose(e.target.value)}
@@ -128,20 +130,22 @@ export function DateRangePicker({ value, onChange }) {
         <option value="week">This week</option>
         <option value="month">This month</option>
         <option value="custom">Custom range</option>
-      </select>
-      <input
+      </Select>
+      <DateInput
         aria-label="From date"
         type="date"
         value={value.from}
+        rangeStart={value.from} rangeEnd={value.to} max={value.to || undefined}
         onChange={(e) => {
           setPreset("custom");
           onChange({ ...value, from: e.target.value });
         }}
       />
-      <input
+      <DateInput
         aria-label="To date"
         type="date"
         value={value.to}
+        rangeStart={value.from} rangeEnd={value.to} min={value.from || undefined}
         onChange={(e) => {
           setPreset("custom");
           onChange({ ...value, to: e.target.value });

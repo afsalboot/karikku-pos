@@ -98,3 +98,26 @@ Product availability is independent of active status. Existing products without 
 Checkout supports Cash, UPI (displayed as GPay / UPI), Card and split allocations. New sales store `payments`, plus `cashReceived` and server-calculated `changeGiven` for cash. Allocations must equal the server total in paise; receipt, history, reports and day closing use applied amounts. Historical sales without a breakdown retain their original payment method, including Other; Other is unavailable for new checkout. Payment remains manually confirmed by the cashier, with no gateway charge or automatic refund integration.
 
 Customers use server-side activity aggregation, search, filters, sorting and pagination. Lifetime orders/spending exclude cancelled and refunded sales; New This Month and Customer Sales cards cover the current India calendar month to date. Recent and full customer history preserve all invoice statuses and open the shared Sale Details drawer. Customer creation stays in Checkout with existing normalized-phone uniqueness and historical snapshots preserved.
+
+## Workspace backup and reset
+
+Administrators can use **Settings → Data & Backup** to create a password-encrypted `.kbackup` archive. Choose Local / External Drive, Google Drive, or Both. Folder selection uses the browser's File System Access API where available; otherwise save the browser download to the desired local or external drive. A selected folder lasts for the current browser session. Backups are manual, not scheduled.
+
+Archives use AES-256-GCM, a randomly salted scrypt password key, gzip, and MongoDB Extended JSON to retain IDs and dates. Keep the backup password separately: the app does not save it and cannot recover it. Backups include operational records, products/categories, settings and login accounts. External product-image files and environment secrets are not bundled; image URLs are retained. Google connection credentials are excluded and must be reconnected after recovery. This application backup is limited to 25 MB of raw BSON / 50 MB of serialized data; larger databases require a database backup tool.
+
+**Reset Workspace** clears sales, expenses, customers and their balances, loyalty transactions, day sessions and cash movements. Products, categories, expense categories, settings, invoice numbering and login credentials remain. All active logins are invalidated, including other checkout tabs. Reset requires a backup from the same login made within 15 minutes, acknowledgement that the file and password are saved, the administrator password, and the exact phrase `RESET WORKSPACE`. Any ordinary workspace write after the backup makes the confirmation stale. The reset uses the same transaction lock as checkout and session closing and retains a reset audit entry. No reset runs automatically.
+
+### Google Drive setup
+
+1. Enable Google Drive API in your Google Cloud project and configure its OAuth consent screen. Create a **Web application** OAuth client. If the project is in testing, add your Google account as a test user; testing-mode authorizations can expire and require reconnection.
+2. Add the exact callback URL to its authorized redirect URIs: `https://YOUR-POS-HOST/api/backups/google-callback` (localhost may use `http://localhost:3000/api/backups/google-callback`).
+3. Configure server-only `GOOGLE_DRIVE_CLIENT_ID`, `GOOGLE_DRIVE_CLIENT_SECRET`, `GOOGLE_DRIVE_REDIRECT_URI` and `BACKUP_TOKEN_KEY` as shown in `.env.example`. Generate the 32-byte hexadecimal token key with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Keep it private and persistent; changing it requires reconnecting Google Drive.
+4. Restart the app. Under Data & Backup, click **Connect Google Drive** and grant access. Backups create a **Karikku POS Backups** folder in that account. The `drive.file` scope limits access to app-created/selected files. If the folder is deleted or access is revoked, reconnect to create a new destination.
+
+See Google's [web-server OAuth guide](https://developers.google.com/identity/protocols/oauth2/web-server) and [Drive upload guide](https://developers.google.com/workspace/drive/api/guides/manage-uploads). Live Drive connection/upload requires your own credentials and consent. Disconnect removes the local saved credential; you can also revoke the app in your Google account permissions.
+
+### Verify or recover an archive
+
+Set `BACKUP_PASSWORD` in the shell and run `node scripts/restore-backup.mjs PATH_TO_FILE.kbackup`. This verifies decryption and reports collection counts without writing a database. To recover, explicitly set `MONGODB_URI` and `MONGODB_DB_NAME` to an **empty replica-set database**, then add `--apply`. The script refuses an existing populated database, restores records in a transaction, recreates model indexes and invalidates restored login sessions. Configure the application to use the recovered database and sign in with its saved credentials. Clear the shell's `BACKUP_PASSWORD` afterward.
+
+Run `NEXT_DIST_DIR=.next-backup` with the build/test process (PowerShell: `$env:NEXT_DIST_DIR='.next-backup'`), then `npm run build` and `node scripts/test-backups.mjs`. The suite uses disposable databases for destructive checks and recovery, and mocks Google endpoints; it does not reset a live shop or upload to a real Google account.

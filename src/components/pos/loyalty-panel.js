@@ -1,4 +1,5 @@
 import { CalendarDays, Check, ChevronDown, ChevronUp, Gift, Ticket, WalletCards } from "lucide-react";
+import DateInput from "@/components/ui/date-input";
 import { useEffect, useId, useState } from "react";
 import { formatCurrency as currency } from "@/lib/client";
 import { birthdayProofSchema } from "@/lib/validation";
@@ -11,7 +12,7 @@ function BirthdayProof({ pending, blocked, onApply }) {
   const parsed = birthdayProofSchema.safeParse({ dateOfBirth: date, checked: true });
   return <div className="birthday-proof">
     {!open ? <button className="button secondary" type="button" disabled={pending} onClick={() => setOpen(true)}>Verify birthday</button> : <>
-      <label>Date of birth on proof<input type="date" value={date} max={businessDate()} onChange={event => setDate(event.target.value)} /></label>
+      <label>Date of birth on proof<DateInput type="date" value={date} max={businessDate()} onChange={event => setDate(event.target.value)} /></label>
       {date && !parsed.success && <p className="form-error" role="alert">{parsed.error.issues[0].message}</p>}
       <label className="birthday-proof-check"><input type="checkbox" checked={checked} onChange={event => setChecked(event.target.checked)} />I checked the customer&apos;s birthday proof</label>
       <small>Used for this sale only. The birthday is not saved to the customer profile.</small>

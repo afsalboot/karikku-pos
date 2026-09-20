@@ -1,4 +1,5 @@
 "use client";
+import Select from "@/components/ui/select";
 import { useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { api, formatCurrency as currency } from "@/lib/client";
@@ -139,12 +140,12 @@ export default function ClosingFlow({ day, refreshing, onRefresh, onClosed }) {
           <p className="muted">Count the drawer before removing any cash.</p>
           <label className="drawer-count-mode">
             Counting Method
-            <select value={mode} onChange={(e) => setMode(e.target.value)}>
+            <Select value={mode} onChange={(e) => setMode(e.target.value)}>
               <option value="denominations">
                 Denomination count (recommended)
               </option>
               <option value="manual">Manual actual cash</option>
-            </select>
+            </Select>
           </label>
           {mode === "denominations" ? (
             <div className="denominations">
@@ -213,7 +214,7 @@ export default function ClosingFlow({ day, refreshing, onRefresh, onClosed }) {
             <div className="difference-reason">
               <label>
                 Reason for Difference *
-                <select
+                <Select
                   required
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
@@ -222,7 +223,7 @@ export default function ClosingFlow({ day, refreshing, onRefresh, onClosed }) {
                   {differenceReasons.map((r) => (
                     <option key={r}>{r}</option>
                   ))}
-                </select>
+                </Select>
               </label>
               {reason === "Other" && (
                 <label>

@@ -1,0 +1,122 @@
+import { MongoMemoryReplSet } from "mongodb-memory-server";
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import { randomUUID, randomBytes } from "node:crypto";
+import { spawn, execFile } from "node:child_process";
+import { promisify } from "node:util";
+import { readFile, mkdir } from "node:fs/promises";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+import assert from "node:assert/strict";
+import { chromium } from "@playwright/test";
+import User from "../src/models/User.js";
+import { decryptBackup, resetCollections, backupCollections } from "../src/lib/backup-archive.js";
+const base = "http://localhost:3107";
+let repl, server, browser, cookie, output = "", checks = 0;
+const check = (value, label) => { assert.ok(value, label); checks++; };
+async function call(path, method = "GET", data, useCookie = cookie) {
+  const response = await fetch(`${base}/api${path}`, { method, headers: { Origin: base, "Content-Type": "application/json", ...(useCookie ? { Cookie: useCookie } : {}) }, ...(data ? { body: JSON.stringify(data) } : {}) });
+  return { response, status: response.status, ...await response.json() };
+}
+try {
+  repl = await MongoMemoryReplSet.create({ binary: { downloadDir: ".cache/mongodb" }, replSet: { count: 1 } });
+  const uri = repl.getUri("backup_test"), password = "TestAdmin123", backupPassword = randomUUID();
+  await mongoose.connect(uri);
+  const hash = await bcrypt.hash(password, 10);
+  await User.create([{ name: "Backup Admin", username: "backupadmin", role: "ADMIN", passwordHash: hash }, { name: "Cashier", username: "cashier", role: "CASHIER", passwordHash: hash }]);
+  server = spawn(process.execPath, ["--import", pathToFileURL(resolve("scripts/mock-google-backup.mjs")).href, "node_modules/next/dist/bin/next", "start", "--port", "3107"], { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, MONGODB_URI: uri, MONGODB_DB_NAME: "backup_test", JWT_SECRET: randomUUID().repeat(2), GOOGLE_DRIVE_CLIENT_ID: "test-client", GOOGLE_DRIVE_CLIENT_SECRET: "test-secret", GOOGLE_DRIVE_REDIRECT_URI: `${base}/api/backups/google-callback`, BACKUP_TOKEN_KEY: randomBytes(32).toString("hex") } });
+  server.stdout.on("data", chunk => { output = (output + chunk).slice(-6000); }); server.stderr.on("data", chunk => { output = (output + chunk).slice(-6000); });
+  for (let i = 0; i < 60; i++) { try { if ((await fetch(`${base}/login`)).ok) break; } catch {} await new Promise(r => setTimeout(r, 500)); }
+  check((await call("/backups", "GET", undefined, "")).status === 401, "Anonymous backup access denied");
+  const login = await call("/auth/login", "POST", { username: "backupadmin", password });
+  cookie = login.response.headers.get("set-cookie").split(";")[0];
+  const cashier = await call("/auth/login", "POST", { username: "cashier", password });
+  const cashierCookie = cashier.response.headers.get("set-cookie").split(";")[0];
+  check((await call("/backups", "GET", undefined, cashierCookie)).status === 403, "Cashier backups denied");
+  check((await call("/backups/reset", "POST", {}, cashierCookie)).status === 403, "Cashier reset denied");
+  const category = (await call("/categories", "POST", { name: "Juice", active: true })).data;
+  const product = (await call("/products", "POST", { name: "Lime", categoryId: category._id, basePrice: 50, active: true, variantsEnabled: false, addonsEnabled: false, variants: [], addons: [] })).data;
+  await call("/day-sessions", "POST", { action: "open", openingCash: 100 });
+  // Records are inserted only into this disposable database to verify every reset collection.
+  for (const name of resetCollections.filter(n => n !== "daysessions")) await mongoose.connection.collection(name).insertOne({ fixture: name, invoiceNumber: randomUUID(), requestId: randomUUID(), phone: randomUUID(), createdAt: new Date() });
+  const before = await call("/backups");
+  check(Object.values(before.data.counts).every(n => n === 1), "Preview counts all operational records");
+  check((await call("/backups/create", "POST", { password: "short", destination: "local" })).status === 400, "Weak backup password rejected");
+  let backup = await call("/backups/create", "POST", { password: backupPassword, destination: "local" });
+  check(backup.status === 200, backup.message);
+  const archive = Buffer.from(backup.data.content, "base64");
+  const restored = decryptBackup(archive, backupPassword);
+  check(backupCollections.every(name => Array.isArray(restored.collections[name])), "Backup contains all supported collections");
+  check(restored.collections.products[0]._id instanceof mongoose.Types.ObjectId, "Backup preserves BSON object IDs");
+  check(restored.collections.products[0].createdAt instanceof Date, "Backup preserves dates");
+  check(restored.collections.users.every(u => u.passwordHash), "Encrypted archive contains restorable login accounts");
+  assert.throws(() => decryptBackup(archive, "incorrect-password")); checks++;
+  const tampered = Buffer.from(archive); tampered[tampered.length - 1] ^= 1;
+  assert.throws(() => decryptBackup(tampered, backupPassword)); checks++;
+  const resetInput = { backupToken: backup.data.backupToken, password, confirmation: "RESET WORKSPACE", backupSaved: true };
+  check((await call("/backups/reset", "POST", { ...resetInput, password: "wrong" })).status === 400, "Reset requires administrator password");
+  check((await call("/backups/reset", "POST", { ...resetInput, backupSaved: false })).status === 400, "Reset requires backup acknowledgement");
+  check(Boolean(product._id), "Product fixture created through API");
+  // Use a valid ordinary write to invalidate the review revision.
+  await call("/categories", "POST", { name: "New Category", active: true });
+  check((await call("/backups/reset", "POST", resetInput)).status === 409, "Reset refuses data changed after backup");
+
+  browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
+  const split = cookie.indexOf("="); await context.addCookies([{ name: cookie.slice(0, split), value: cookie.slice(split + 1), url: base }]);
+  const page = await context.newPage(), errors = [];
+  page.on("pageerror", e => errors.push(e.message));
+  await page.goto(base + "/settings"); await page.getByRole("button", { name: "Data & Backup", exact: true }).click();
+  await page.getByRole("heading", { name: "Workspace Backup" }).waitFor();
+  check(await page.getByRole("button", { name: "Reset Workspace", exact: true }).isDisabled(), "Reset disabled before saved backup");
+  const connect = await context.request.post(base + "/api/backups/google-connect", { headers: { Origin: base }, data: {} });
+  const authUrl = new URL((await connect.json()).data.url);
+  check(authUrl.searchParams.get("scope") === "https://www.googleapis.com/auth/drive.file", "Google requests only app-file scope");
+  check(Boolean(authUrl.searchParams.get("code_challenge")), "Google connection uses PKCE");
+  const callback = await context.request.get(`${base}/api/backups/google-callback?state=${authUrl.searchParams.get("state")}&code=test-code`);
+  check(callback.ok(), "Mock Google callback connects account");
+  check((await call("/backups")).data.google.connected, "Google connection persisted");
+  const privateConfig = await mongoose.connection.collection("backupstates").findOne({ _id: "shop" });
+  check(privateConfig.googleToken && !privateConfig.googleToken.includes("test-refresh"), "Refresh token encrypted at rest");
+  const both = await call("/backups/create", "POST", { password: backupPassword, destination: "both" });
+  check(both.status === 200 && both.data.drive.fileId === "test-backup-file" && both.data.content, "Both destinations receive encrypted archive using mock Drive");
+  check(!JSON.stringify((await call("/backups")).data).includes(privateConfig.googleToken), "Status never exposes Google credential");
+  await page.reload(); await page.getByRole("button", { name: "Data & Backup", exact: true }).click();
+  await page.getByLabel("Backup password", { exact: true }).fill(backupPassword);
+  await page.getByLabel("Confirm backup password", { exact: true }).fill(backupPassword);
+  const downloadPromise = page.waitForEvent("download"); await page.getByRole("button", { name: "Create Backup", exact: true }).click();
+  const download = await downloadPromise;
+  await mkdir("test-results", { recursive: true });
+  const filePath = resolve("test-results/verified.kbackup"); await download.saveAs(filePath);
+  check(decryptBackup(await readFile(filePath), backupPassword).format === "karikku-pos", "Browser downloads a valid encrypted backup");
+  await page.getByRole("checkbox", { name: "I have verified that the backup is saved and kept its password." }).check();
+  for (const width of [390, 820, 1440]) {
+    await page.setViewportSize({ width, height: 1000 }); await page.waitForTimeout(400);
+    check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "Backup settings fit " + width);
+    await page.screenshot({ path: `test-results/backup-settings-${width}.png`, fullPage: true });
+  }
+  await page.getByRole("button", { name: "Reset Workspace", exact: true }).click();
+  await page.getByLabel("Administrator password", { exact: true }).fill(password);
+  await page.getByLabel("Type RESET WORKSPACE to confirm", { exact: true }).fill("RESET WORKSPACE");
+  await page.getByRole("button", { name: "Confirm Reset", exact: true }).click();
+  await page.waitForURL("**/login");
+  check((await call("/backups")).status === 401 && (await call("/sales", "GET", undefined, cashierCookie)).status === 401, "Reset invalidates all active sessions");
+  for (const name of resetCollections) check(await mongoose.connection.collection(name).countDocuments() === 0, name + " cleared");
+  check(await mongoose.connection.collection("products").countDocuments() === 1, "Products retained");
+  check(await mongoose.connection.collection("categories").countDocuments() === 2, "Categories retained");
+  check(await User.countDocuments() === 2, "Login accounts retained");
+  const relogin = await call("/auth/login", "POST", { username: "backupadmin", password });
+  check(relogin.status === 200, "Same administrator credentials work after reset");
+  cookie = relogin.response.headers.get("set-cookie").split(";")[0];
+  check((await call("/backups/reset", "POST", resetInput)).status === 403, "Old backup proof cannot be replayed after reset");
+  check((await call("/day-sessions")).data.current === null, "Fresh workspace has no open drawer session");
+  check((await call("/backups")).data.lastReset.counts.sales === 1, "Reset audit retained");
+  const restoreEnv = { ...process.env, BACKUP_PASSWORD: backupPassword, MONGODB_URI: uri, MONGODB_DB_NAME: "restored_backup_test" };
+  const restoredRun = await promisify(execFile)(process.execPath, ["scripts/restore-backup.mjs", filePath, "--apply"], { env: restoreEnv, windowsHide: true });
+  check(restoredRun.stdout.includes("Restore completed"), "Archive restores into an empty isolated database");
+  check(await mongoose.connection.useDb("restored_backup_test").collection("sales").countDocuments() === 1, "Restore recovers deleted sales");
+  await assert.rejects(promisify(execFile)(process.execPath, ["scripts/restore-backup.mjs", filePath, "--apply"], { env: restoreEnv, windowsHide: true })); checks++;
+  check(errors.length === 0, "No browser runtime errors: " + errors.join(", "));
+  console.log(`PASS: ${checks} backup/reset checks; Google calls mocked, local archive and isolated restore verified.`);
+} catch (error) { console.error(error.stack); console.error(output); process.exitCode = 1; }
+finally { await browser?.close(); server?.kill(); await mongoose.disconnect(); await repl?.stop(); }

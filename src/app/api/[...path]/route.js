@@ -9,6 +9,7 @@ import { daySessions } from "@/services/day-sessions";
 import { users, settings } from "@/services/admin";
 import { customers } from "@/services/customers";
 import { loyalty } from "@/services/loyalty";
+import { backups } from "@/services/backups";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const dispatch = endpoint(async (request, context) => {
@@ -35,6 +36,7 @@ const dispatch = endpoint(async (request, context) => {
     users,
     settings,
     loyalty,
+    backups,
   };
   if (!resources[resource]) fail(404, "Endpoint not found");
   const collectionMethods = {
@@ -50,8 +52,10 @@ const dispatch = endpoint(async (request, context) => {
     dashboard: ["GET"],
     "day-sessions": ["GET", "POST"],
     loyalty: ["GET", "POST", "PATCH"],
+    backups: ["GET"],
   };
   const detailMethods = {
+    backups: ["GET", "POST"],
     customers: ["GET"],
     products: ["GET", "PATCH"],
     categories: ["GET", "PATCH"],

@@ -1,4 +1,5 @@
 "use client";
+import Select from "@/components/ui/select";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import Modal from "@/components/modal";
@@ -51,7 +52,7 @@ export default function MovementModal({ day, onClose, onSaved }) {
           <fieldset disabled={pending}>
             <label>
               Movement Type
-              <select
+              <Select
                 value={type}
                 onChange={(e) => {
                   setType(e.target.value);
@@ -60,11 +61,11 @@ export default function MovementModal({ day, onClose, onSaved }) {
               >
                 <option value="IN">Cash In</option>
                 <option value="OUT">Cash Out</option>
-              </select>
+              </Select>
             </label>
             <label>
               Category
-              <select
+              <Select
                 aria-label="Category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -72,7 +73,7 @@ export default function MovementModal({ day, onClose, onSaved }) {
                 {movementCategories[type].map((c) => (
                   <option key={c}>{c}</option>
                 ))}
-              </select>
+              </Select>
             </label>
             <label>
               Amount (₹)

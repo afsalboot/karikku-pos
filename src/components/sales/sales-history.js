@@ -1,4 +1,6 @@
 "use client";
+import Select from "@/components/ui/select";
+import DateInput from "@/components/ui/date-input";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -142,7 +144,7 @@ export default function SalesWorkspace() {
       </div>
       <section className="sales-history-panel">
         <div className="sales-filters">
-          <select
+          <Select
             aria-label="Date range"
             value={preset}
             onChange={(e) => {
@@ -163,21 +165,23 @@ export default function SalesWorkspace() {
                 {label}
               </option>
             ))}
-          </select>
-          <input
+          </Select>
+          <DateInput
             type="date"
             aria-label="From date"
             value={range.from}
+            rangeStart={range.from} rangeEnd={range.to} max={range.to || undefined}
             onChange={(e) => {
               setPreset("custom");
               filter(setRange, { ...range, from: e.target.value });
             }}
           />
-          <input
+          <DateInput
             type="date"
             aria-label="To date"
             min={range.from}
             value={range.to}
+            rangeStart={range.from} rangeEnd={range.to}
             onChange={(e) => {
               setPreset("custom");
               filter(setRange, { ...range, to: e.target.value });
@@ -207,7 +211,7 @@ export default function SalesWorkspace() {
             id="sales-extra-filters"
             className={`sales-extra-filters ${expanded ? "expanded" : ""}`}
           >
-            <select
+            <Select
               aria-label="Payment method"
               value={payment}
               onChange={(e) => filter(setPayment, e.target.value)}
@@ -218,8 +222,8 @@ export default function SalesWorkspace() {
                   {paymentLabel(p)}
                 </option>
               ))}
-            </select>
-            <select
+            </Select>
+            <Select
               aria-label="Sale status"
               value={status}
               onChange={(e) => filter(setStatus, e.target.value)}
@@ -230,8 +234,8 @@ export default function SalesWorkspace() {
                   {statusLabel(s)}
                 </option>
               ))}
-            </select>
-            <select
+            </Select>
+            <Select
               aria-label="Cashier"
               value={cashier}
               onChange={(e) => filter(setCashier, e.target.value)}
@@ -242,7 +246,7 @@ export default function SalesWorkspace() {
                   {u.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <button className="sales-reset" onClick={reset}>
             <RotateCcw size={14} />
@@ -392,7 +396,7 @@ export default function SalesWorkspace() {
               {data.total ? Math.min((page - 1) * limit + 1, data.total) : 0}–
               {Math.min(page * limit, data.total)} of {data.total} sales
             </span>
-            <select
+            <Select
               aria-label="Sales per page"
               value={limit}
               onChange={(e) => {
@@ -405,7 +409,7 @@ export default function SalesWorkspace() {
                   {n} per page
                 </option>
               ))}
-            </select>
+            </Select>
             <div>
               <button disabled={page <= 1} onClick={() => setPage(page - 1)}>
                 Previous

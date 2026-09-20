@@ -1,4 +1,5 @@
 "use client";
+import Select from "@/components/ui/select";
 import { useRef, useState } from "react";
 import { ShoppingBasket, ChevronUp } from "lucide-react";
 import ProductBrowser from "./product-browser";
@@ -286,7 +287,7 @@ function ConfigureProduct({ product, onClose, onAdd }) {
           {product.variantsEnabled && (
             <label className="field">
               Choose a variant
-              <select
+              <Select
                 required
                 value={variantId}
                 onChange={(e) => setVariantId(e.target.value)}
@@ -299,7 +300,7 @@ function ConfigureProduct({ product, onClose, onAdd }) {
                     {v.name} — {formatCurrency(v.price)}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
           )}
           {product.addonsEnabled && (
