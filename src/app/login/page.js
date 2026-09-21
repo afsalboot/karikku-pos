@@ -1,13 +1,27 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { api } from "@/lib/client";
+import { safeReturnPath } from "@/lib/navigation";
 export default function LoginPage() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
   const submitting = useRef(false);
+  const [expired, setExpired] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(
+      () =>
+        setExpired(
+          new URLSearchParams(window.location.search).get("reason") ===
+            "expired",
+        ),
+      0,
+    );
+    return () => window.clearTimeout(timer);
+  }, []);
   async function submit(event) {
     event.preventDefault();
     if (submitting.current) return;
@@ -23,7 +37,13 @@ export default function LoginPage() {
           password: form.get("password"),
         },
       });
-      router.replace(user.role === "ADMIN" ? "/dashboard" : "/pos");
+      router.replace(
+        safeReturnPath(
+          new URLSearchParams(window.location.search).get("next"),
+          user.role === "ADMIN" ? "/dashboard" : "/pos",
+        ),
+      );
+      router.refresh();
     } catch (error) {
       submitting.current = false;
       setError(error.message);
@@ -44,6 +64,12 @@ export default function LoginPage() {
         <p className="eyebrow">KARIKKU POS</p>
         <h1>Welcome back</h1>
         <p>Sign in to your shop workspace.</p>
+        {expired && (
+          <p role="status">
+            Your session has ended. Sign in again to continue. An unfinished
+            cart is not restored.
+          </p>
+        )}
         <form onSubmit={submit}>
           <label className="field">
             Username
@@ -74,6 +100,11 @@ export default function LoginPage() {
             {pending ? "Signing in…" : "Sign in"}
           </button>
         </form>
+        <nav className="login-help" aria-label="Sign-in help">
+          <Link href="/help#sign-in">Forgot your password?</Link>
+          <Link href="/help">Help</Link>
+          <Link href="/cookies">Cookies and browser storage</Link>
+        </nav>
       </section>
     </main>
   );

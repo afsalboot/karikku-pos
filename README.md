@@ -75,6 +75,31 @@ Serve production over HTTPS so secure authentication cookies work. Configure the
 
 ## Verification
 
+Production-page assessment and owner-policy blockers are recorded in
+[`docs/PRODUCTION_PAGE_AUDIT.md`](docs/PRODUCTION_PAGE_AUDIT.md).
+Staff can open **Your account**, **Help and setup**, and **Cookies and browser storage**
+from Profile options. Sign-in help includes the existing administrator-assisted password
+reset process; it does not send reset emails.
+
+For controlled downtime, set server-only `MAINTENANCE_MODE=true` and restart every
+application instance. Pages and API requests return HTTP 503 with Retry-After;
+setting it back to `false` and restarting restores access. This does not cancel
+requests already in flight; finish or reconcile active checkouts before maintenance.
+
+To verify the new pages using a disposable database and local production servers:
+
+```powershell
+$env:NEXT_DIST_DIR = ".next-production-pages"
+npm run build
+npm run test:pages
+```
+
+The page runner reserves ports 3117–3120, generates temporary staff credentials,
+tests maintenance and failure configurations, and writes screenshots under
+`test-results/production-pages/`. It does not connect to the configured shop database.
+The offline fallback becomes available after a successful online visit installs the
+service worker. It does not support saving sales offline or restoring unfinished carts.
+
 ```powershell
 npm run lint
 npm test

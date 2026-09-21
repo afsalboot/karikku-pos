@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./production-states.css";
 
 export const metadata = {
   title: "Karikku POS",

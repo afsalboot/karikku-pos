@@ -1,4 +1,5 @@
 import ProductImage from "./product-image";
+import Link from "next/link";
 import { memo } from "react";
 import { Search, Plus, ShoppingBasket } from "lucide-react";
 import { formatCurrency } from "@/lib/client";
@@ -90,7 +91,34 @@ function ProductBrowser({
             ))}
           </div>
         ) : (
-          <EmptyState message="No active products found" />
+          <EmptyState
+            message={
+              query || category
+                ? "No matching products"
+                : "No active products found"
+            }
+            description={
+              query || category
+                ? "Try a different search or clear the filters."
+                : "Ask an administrator to add active products and categories before taking a sale."
+            }
+          >
+            {query || category ? (
+              <button
+                className="button secondary"
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  setCategory("");
+                  setPage(1);
+                }}
+              >
+                Clear filters
+              </button>
+            ) : (
+              <Link href="/help">View setup guide</Link>
+            )}
+          </EmptyState>
         )}
       </Notice>
       {products.data?.pages > 1 ? (
@@ -134,22 +162,22 @@ function ProductCard({ product, pending, select, count }) {
         )}
       </div>
       <div className="pos-product-details flex w-full min-w-0 flex-1 flex-col">
-      <strong className="line-clamp-2 text-sm leading-5 text-[#162219]">
-        {product.name}
-      </strong>
-      <small className="mt-1 truncate text-xs text-[#6a756c]">
-        {product.categoryId?.name}
-      </small>
-      <div className="mt-auto flex items-center justify-between gap-1 pt-3">
-        <span className="text-sm font-semibold text-[#245b3a]">
-          {product.variantsEnabled
-            ? `From ${formatCurrency(Math.min(...product.variants.map((variant) => variant.price)))}`
-            : formatCurrency(product.basePrice)}
-        </span>
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#eaf2e5] text-[#245b3a] transition-colors group-hover:bg-[#245b3a] group-hover:text-white">
-          <Plus size={18} aria-hidden="true" />
-        </span>
-      </div>
+        <strong className="line-clamp-2 text-sm leading-5 text-[#162219]">
+          {product.name}
+        </strong>
+        <small className="mt-1 truncate text-xs text-[#6a756c]">
+          {product.categoryId?.name}
+        </small>
+        <div className="mt-auto flex items-center justify-between gap-1 pt-3">
+          <span className="text-sm font-semibold text-[#245b3a]">
+            {product.variantsEnabled
+              ? `From ${formatCurrency(Math.min(...product.variants.map((variant) => variant.price)))}`
+              : formatCurrency(product.basePrice)}
+          </span>
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#eaf2e5] text-[#245b3a] transition-colors group-hover:bg-[#245b3a] group-hover:text-white">
+            <Plus size={18} aria-hidden="true" />
+          </span>
+        </div>
       </div>
     </button>
   );

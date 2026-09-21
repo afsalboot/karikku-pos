@@ -1,5 +1,5 @@
 import { ArrowRight, LoaderCircle, ShieldCheck } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Modal from "@/components/modal";
 import { api, formatCurrency } from "@/lib/client";
 import CheckoutPayment, { usePaymentDraft } from "./checkout-payment";
@@ -24,6 +24,7 @@ export default function PaymentModal({
   onClose,
 }) {
   const count = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+  const formId = useId();
   const emptySelection = { walletAmount: 0, walletInput: "", stampReward: false, birthdayReward: false };
   const [loyaltyState, setLoyaltyState] = useState(emptySelection);
   const customerPicker = useRef(null);
@@ -61,6 +62,7 @@ export default function PaymentModal({
     >
       <div className={loyaltyEnabled ? "checkout-with-loyalty" : "checkout-single"}>
       <form
+        id={formId}
         className="checkout-form"
         onSubmit={async (event) => {
           event.preventDefault();
@@ -133,7 +135,10 @@ export default function PaymentModal({
             </p>
           )}
         </fieldset>
-        <footer className="modal-footer">
+      </form>
+      {loyaltyEnabled && <LoyaltyPanel key={customer.customerId || "walk-in"} customer={customer} member={member} configResult={configResult} selection={selection} setLoyalty={setLoyalty} preview={preview} maximum={maximum} walletError={walletError} totals={totals} checkoutTotals={checkoutTotals} subtotal={subtotal} pending={pending} clearLoyalty={clearLoyalty} onSelectCustomer={checkoutSettings.customerPrompt !== "NEVER" ? focusCustomer : null} />}
+      </div>
+        <footer className="modal-footer checkout-submit-footer">
           <button
             type="button"
             className="button secondary"
@@ -144,6 +149,7 @@ export default function PaymentModal({
           </button>
           <button
             type="submit"
+            form={formId}
             className="button primary"
             disabled={
               pending ||
@@ -170,9 +176,6 @@ export default function PaymentModal({
             )}
           </button>
         </footer>
-      </form>
-      {loyaltyEnabled && <LoyaltyPanel key={customer.customerId || "walk-in"} customer={customer} member={member} configResult={configResult} selection={selection} setLoyalty={setLoyalty} preview={preview} maximum={maximum} walletError={walletError} totals={totals} checkoutTotals={checkoutTotals} subtotal={subtotal} pending={pending} clearLoyalty={clearLoyalty} onSelectCustomer={checkoutSettings.customerPrompt !== "NEVER" ? focusCustomer : null} />}
-      </div>
     </Modal>
   </div>;
 }

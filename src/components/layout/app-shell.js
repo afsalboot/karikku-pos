@@ -246,34 +246,52 @@ export default function AppShell({ user, settings, children }) {
               )}
             </button>
             <strong>{pathname === "/pos" ? "Point of Sale" : title}</strong>
-            <NetworkStatus />
-            <details className="profile-dropdown" ref={profileRef} key={pathname}>
+            <details
+              className="profile-dropdown"
+              ref={profileRef}
+              key={pathname}
+            >
               <summary className="current-user" aria-label="Profile options">
-              <span>
-                {user.name}
-                <small>
-                  {user.role === "ADMIN" ? "Administrator" : "Cashier"}
-                </small>
-              </span>
-              <span className="avatar">{user.name.slice(0, 1)}</span>
-              <ChevronDown size={14} aria-hidden="true" />
+                <span>
+                  {user.name}
+                  <small>
+                    {user.role === "ADMIN" ? "Administrator" : "Cashier"}
+                  </small>
+                </span>
+                <span className="avatar">{user.name.slice(0, 1)}</span>
+                <ChevronDown size={14} aria-hidden="true" />
               </summary>
               <div className="profile-options">
                 <div className="profile-identity">
                   <strong>{user.name}</strong>
-                  <small>{user.role === "ADMIN" ? "Administrator" : "Cashier"}</small>
+                  <small>
+                    {user.role === "ADMIN" ? "Administrator" : "Cashier"}
+                  </small>
                 </div>
+                <Link href="/account">Your account</Link>
+                <Link href="/help">Help and setup</Link>
+                <Link href="/cookies">Cookies and browser storage</Link>
                 {permitted(["Day Closing", "/day-closing"]) && (
-                  <Link href="/day-closing" aria-current={isActive(pathname, "/day-closing") ? "page" : undefined} onClick={() => { profileRef.current.open = false; }}>
+                  <Link
+                    href="/day-closing"
+                    aria-current={
+                      isActive(pathname, "/day-closing") ? "page" : undefined
+                    }
+                    onClick={() => {
+                      profileRef.current.open = false;
+                    }}
+                  >
                     <CalendarCheck size={18} aria-hidden="true" /> Day Closing
                   </Link>
                 )}
                 <button type="button" disabled={pending} onClick={logout}>
-                  <LogOut size={18} aria-hidden="true" /> {pending ? "Signing out…" : "Logout"}
+                  <LogOut size={18} aria-hidden="true" />{" "}
+                  {pending ? "Signing out…" : "Logout"}
                 </button>
               </div>
             </details>
           </header>
+          <NetworkStatus />
           <div className="app-page">{children}</div>
         </div>
       </div>

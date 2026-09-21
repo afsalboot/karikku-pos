@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { currentUser } from "@/lib/auth";
+import { requirePageUser } from "@/lib/page-auth";
 import { getSettings } from "@/services/settings";
 import ProductsWorkspace from "@/components/products-workspace";
 import PosWorkspace from "@/components/pos/pos-workspace";
@@ -11,6 +11,7 @@ import DayWorkspace from "@/components/day-workspace";
 import UsersWorkspace from "@/components/users-workspace";
 import SettingsWorkspace from "@/components/settings-workspace";
 import CustomersWorkspace from "@/components/customers-workspace";
+import { canAccessSection } from "@/lib/navigation";
 export default async function WorkspacePage({ params, searchParams }) {
   const { section } = await params;
   if (
@@ -28,16 +29,10 @@ export default async function WorkspacePage({ params, searchParams }) {
     ].includes(section)
   )
     notFound();
-  const user = await currentUser();
-  if (!user) redirect("/login");
+  const user = await requirePageUser(`/${section}`);
   if (user.role !== "ADMIN") {
     const settings = await getSettings();
-    if (
-      !["pos", "sales"].includes(section) &&
-      !(section === "expenses" && settings.allowCashierExpenses) &&
-      !(section === "day-closing" && settings.allowCashierDayClosing)
-    )
-      redirect("/pos");
+    if (!canAccessSection(user.role, section, settings)) redirect("/forbidden");
   }
   const views = {
     customers: CustomersWorkspace,

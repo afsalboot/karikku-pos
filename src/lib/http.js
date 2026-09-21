@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { fail } from "./auth.js";
+import { COOKIE } from "./jwt.js";
 export const ok = (data, message = "Success", status = 200) =>
   NextResponse.json(
     { success: true, message, data },
@@ -28,9 +29,7 @@ export function endpoint(handler, { multipart = false } = {}) {
     } catch (error) {
       let status = error.status || 500;
       let message =
-        status < 500 || status === 503
-          ? error.message
-          : "Unable to complete the request";
+        status < 500 ? error.message : "Unable to complete the request";
       if (error instanceof ZodError) {
         status = 400;
         message = error.issues
@@ -49,10 +48,12 @@ export function endpoint(handler, { multipart = false } = {}) {
       }
       if (status === 500)
         console.error("API failure", error.name, error.code || "internal");
-      return NextResponse.json(
+      const response = NextResponse.json(
         { success: false, message },
         { status, headers: { "Cache-Control": "no-store" } },
       );
+      if (status === 401) response.cookies.delete(COOKIE);
+      return response;
     }
   };
 }

@@ -1,4 +1,5 @@
 import Expense from "../models/Expense.js";
+import { Types } from "mongoose";
 import ExpenseCategory from "../models/ExpenseCategory.js";
 import DaySession from "../models/DaySession.js";
 import { requireUser, admin, fail } from "../lib/auth.js";
@@ -32,11 +33,15 @@ export async function expenses(request, recordId) {
       query.$or = [{ description: match }, { categoryName: match }];
     }
     if (url.searchParams.get("category"))
-      query.categoryId = id.parse(url.searchParams.get("category"));
+      query.categoryId = new Types.ObjectId(
+        id.parse(url.searchParams.get("category")),
+      );
     if (url.searchParams.get("payment"))
       query.paymentMethod = payment.parse(url.searchParams.get("payment"));
     if (url.searchParams.get("createdBy"))
-      query["createdBy.userId"] = id.parse(url.searchParams.get("createdBy"));
+      query["createdBy.userId"] = new Types.ObjectId(
+        id.parse(url.searchParams.get("createdBy")),
+      );
     if (user.role !== "ADMIN") query["createdBy.userId"] = user._id;
     const creatorQuery = { ...query };
     delete creatorQuery["createdBy.userId"];

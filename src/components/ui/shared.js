@@ -44,10 +44,16 @@ export function Notice({ error, loading, children, retry }) {
     );
   return children;
 }
-export function EmptyState({ message = "No records found" }) {
+export function EmptyState({
+  message = "No records found",
+  description,
+  children,
+}) {
   return (
-    <div className="empty-state">
+    <div className="empty-state" role="status">
       <h2>{message}</h2>
+      {description && <p>{description}</p>}
+      {children}
     </div>
   );
 }
@@ -135,7 +141,9 @@ export function DateRangePicker({ value, onChange }) {
         aria-label="From date"
         type="date"
         value={value.from}
-        rangeStart={value.from} rangeEnd={value.to} max={value.to || undefined}
+        rangeStart={value.from}
+        rangeEnd={value.to}
+        max={value.to || undefined}
         onChange={(e) => {
           setPreset("custom");
           onChange({ ...value, from: e.target.value });
@@ -145,7 +153,9 @@ export function DateRangePicker({ value, onChange }) {
         aria-label="To date"
         type="date"
         value={value.to}
-        rangeStart={value.from} rangeEnd={value.to} min={value.from || undefined}
+        rangeStart={value.from}
+        rangeEnd={value.to}
+        min={value.from || undefined}
         onChange={(e) => {
           setPreset("custom");
           onChange({ ...value, to: e.target.value });

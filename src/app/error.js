@@ -1,12 +1,21 @@
 "use client";
-export default function ErrorPage({ reset }) {
+import PageState from "@/components/ui/page-state";
+export default function ErrorPage({ retry }) {
   return (
-    <main className="workspace">
-      <h1>Unable to load this page</h1>
-      <p>The server or database may be unavailable. Please try again.</p>
-      <button className="button primary" onClick={reset}>
-        Try again
-      </button>
-    </main>
+    <PageState
+      code="Error"
+      title="Unable to load this page"
+      action={
+        <button className="button primary" onClick={retry}>
+          Try again
+        </button>
+      }
+    >
+      <p>
+        We could not load the workspace. Check your connection and try again. If
+        the problem continues, let your shop administrator know which action
+        failed.
+      </p>
+    </PageState>
   );
 }

@@ -418,7 +418,7 @@ try {
       expenseList.data.summary.amount === 50 &&
       expenseList.data.summary.average === 50 &&
       expenseList.data.categories[0]._id === "Test Expenses" &&
-      expenseList.data.creators.some((creator) => creator.name === "Admin"),
+      expenseList.data.creators.some((creator) => creator.name === login.data.name),
     "Expenses expose summary, category breakdown, creator filters and category-name search",
   );
   check(
@@ -607,9 +607,9 @@ try {
     cashierLookup.status === 200 &&
       cashierLookup.data.items.length === 1 &&
       Object.keys(cashierLookup.data.items[0]).every((k) =>
-        ["_id", "name", "phone"].includes(k),
+        ["_id", "name", "phone", "loyalty"].includes(k),
       ),
-    "Cashier lookup returns matching contact fields without customer history or metrics",
+    "Cashier lookup returns checkout contact and loyalty fields without invoice history",
   );
   check(
     (
@@ -696,12 +696,20 @@ try {
   const staffPayload = payload();
   staffPayload.items[0].variantId = freshProduct.data.variants[0]._id;
   staffPayload.items[0].addonIds = freshProduct.data.addons.map((a) => a._id);
-  check(
-    (await call("/sales", "POST", staffPayload, cashierCookie)).status === 400,
-    "Cashier discounts disabled on backend",
-  );
   const settingsResponse = await call("/settings", "GET", undefined, cookie);
   const { _id, createdAt, updatedAt, __v, ...settings } = settingsResponse.data;
+  check(
+    (await call("/settings", "PATCH", { ...settings, discountEnabled: false }, cookie)).status === 200,
+    "Administrator disables discounts for the whole workspace",
+  );
+  check(
+    (await call("/sales", "POST", staffPayload, cashierCookie)).status === 400,
+    "Globally disabled discounts are rejected for cashiers",
+  );
+  check(
+    (await call("/sales", "POST", { ...staffPayload, requestId: randomUUID() }, cookie)).status === 400,
+    "Globally disabled discounts are rejected for administrators",
+  );
   const changedSettings = {
     ...settings,
     paymentMethods: ["Cash"],
@@ -723,9 +731,10 @@ try {
   const closed = await call(
     "/day-sessions",
     "POST",
-    { action: "close", sessionId: open.data._id, actualCash: 1225 },
+    { action: "close", sessionId: open.data._id, actualCash: 1225, differenceReason: "Other", differenceDescription: "Test counted five rupees short" },
     cookie,
   );
+  check(closed.status === 200, `Day closes: ${closed.message}`);
   check(closed.data.difference === -5, "Closing difference is correct");
   const closedDashboard = await call("/dashboard", "GET", undefined, cookie);
   check(
@@ -742,7 +751,7 @@ try {
   const newDay = await call(
     "/day-sessions",
     "POST",
-    { action: "open", openingCash: 1000 },
+    { action: "open", openingCash: 1000, openingAdjustmentReason: "Test opening float adjustment" },
     cookie,
   );
   check(newDay.status === 200, "Next session opens");
@@ -1412,13 +1421,11 @@ try {
     exact: true,
   });
   await success.waitFor();
+  const receiptPayment = success.getByRole("region", { name: "Invoice details", exact: true }).locator(".sale-payment-breakdown");
   check(
-    (await success.locator(".sale-payment-breakdown").textContent()).includes(
-      "Split",
-    ) &&
-      (await success.locator(".sale-payment-breakdown").textContent()).includes(
-        "400.00",
-      ),
+    (await receiptPayment.textContent()).includes("Cash") &&
+      (await receiptPayment.textContent()).includes("GPay / UPI") &&
+      (await receiptPayment.textContent()).includes("400.00"),
     "Receipt shows split allocations and cash change",
   );
   check(
@@ -1804,7 +1811,7 @@ try {
     call(
       "/day-sessions",
       "POST",
-      { action: "close", sessionId: beforeRace._id, actualCash: 0 },
+      { action: "close", sessionId: beforeRace._id, actualCash: 0, differenceReason: "Other", differenceDescription: "Test closing count" },
       cookie,
     ),
   ]);
@@ -1821,7 +1828,7 @@ try {
   const splitDay = await call(
     "/day-sessions",
     "POST",
-    { action: "open", openingCash: 1000 },
+    { action: "open", openingCash: 1000, openingAdjustmentReason: "Test opening float adjustment" },
     cookie,
   );
   const beforeSplitReport = (await call("/reports", "GET", undefined, cookie))
@@ -1927,7 +1934,7 @@ try {
   await call(
     "/day-sessions",
     "POST",
-    { action: "open", openingCash: 1000 },
+    { action: "open", openingCash: 1000, openingAdjustmentReason: "Test opening float adjustment" },
     cookie,
   );
   await call(
