@@ -1,6 +1,23 @@
 const referenceCache = new Map();
 const inFlightReferenceRequests = new Map();
 const REFERENCE_CACHE_MS = 15000;
+let cacheGeneration = 0;
+function invalidateReferences() {
+  cacheGeneration++;
+  referenceCache.clear();
+  inFlightReferenceRequests.clear();
+}
+
+// Cancelling one subscriber must not cancel a shared request for other views.
+function forSubscriber(promise, signal) {
+  if (!signal) return promise;
+  if (signal.aborted) return Promise.reject(new DOMException("Aborted", "AbortError"));
+  return new Promise((resolve, reject) => {
+    const abort = () => { signal.removeEventListener("abort", abort); reject(new DOMException("Aborted", "AbortError")); };
+    signal.addEventListener("abort", abort, { once: true });
+    promise.then(resolve, reject).finally(() => signal.removeEventListener("abort", abort));
+  });
+}
 
 const isReferencePath = (path) =>
   ["/categories", "/expense-categories", "/settings", "/loyalty/settings"].includes(
@@ -29,39 +46,37 @@ async function request(path, options) {
 }
 
 export async function api(path, options = {}) {
+  if (options.signal?.aborted) throw new DOMException("Aborted", "AbortError");
   const method = (options.method || "GET").toUpperCase();
   // These small reference payloads change infrequently. Reuse them briefly so
   // navigating between screens does not wait on a slow connection again.
   const cacheable =
-    method === "GET" && !options.signal && isReferencePath(path);
+    method === "GET" && isReferencePath(path);
   if (!cacheable) {
-    const data = await request(path, options);
-    if (method !== "GET") referenceCache.clear();
-    return data;
+    if (method !== "GET") invalidateReferences();
+    try { return await request(path, options); }
+    finally { if (method !== "GET") invalidateReferences(); }
   }
 
   const cached = referenceCache.get(path);
   if (cached && Date.now() - cached.savedAt < REFERENCE_CACHE_MS)
-    return cached.data;
+    return forSubscriber(Promise.resolve(cached.data), options.signal);
   if (inFlightReferenceRequests.has(path))
-    return inFlightReferenceRequests.get(path);
+    return forSubscriber(inFlightReferenceRequests.get(path), options.signal);
 
-  const pending = request(path, options)
+  const generation = cacheGeneration;
+  const pending = request(path, { ...options, signal: undefined })
     .then((data) => {
-      referenceCache.set(path, { data, savedAt: Date.now() });
+      if (generation === cacheGeneration) referenceCache.set(path, { data, savedAt: Date.now() });
       return data;
     })
-    .finally(() => inFlightReferenceRequests.delete(path));
+    .finally(() => { if (inFlightReferenceRequests.get(path) === pending) inFlightReferenceRequests.delete(path); });
   inFlightReferenceRequests.set(path, pending);
-  return pending;
+  return forSubscriber(pending, options.signal);
 }
+const currencyFormatter = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" });
+const dateFormatter = new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" });
 export const formatCurrency = (value = 0) =>
-  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
-    value,
-  );
+  currencyFormatter.format(value);
 export const formatDate = (value) =>
-  new Intl.DateTimeFormat("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Kolkata",
-  }).format(new Date(value));
+  dateFormatter.format(new Date(value));

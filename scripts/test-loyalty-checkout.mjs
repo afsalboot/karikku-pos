@@ -134,7 +134,7 @@ try {
   await page.getByRole("button",{name:/Loyalty test juice/}).click();
   await page.getByRole("button",{name:"Proceed Payment",exact:true}).click();
   const dialog=page.getByRole("dialog",{name:"Checkout",exact:true});
-  const panel=page.getByRole("complementary",{name:"Loyalty",exact:true});
+  const panel=page.getByRole("complementary",{name:/Loyalty/});
   await panel.getByRole("button",{name:"Select Customer",exact:true}).click();
   check(await page.getByRole("combobox",{name:"Customer name",exact:true}).evaluate(el=>el===document.activeElement),"Select Customer focuses existing picker");
   check(await panel.getByText("Wallet Balance",{exact:true}).count()===0,"Walk-ins have no wallet amounts");
@@ -156,7 +156,7 @@ try {
   await page.getByRole("button",{name:"Cash",exact:true}).click();
   check(await page.getByRole("button",{name:/Complete Sale/}).isEnabled(),"Loyalty load failure permits checkout without rewards");
   await panel.getByRole("button",{name:"Try Again",exact:true}).click();
-  await panel.getByRole("status",{name:"Loading loyalty information"}).waitFor();
+  // Background retry retains the current panel until fresh data arrives.
   await panel.getByText("Wallet Balance",{exact:true}).waitFor();
   await page.unroute("**/api/loyalty/customer?*");
   await panel.getByRole("progressbar",{name:"Stamps",exact:true}).waitFor();

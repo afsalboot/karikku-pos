@@ -52,13 +52,14 @@ try {
     await page.setViewportSize({width,height:956}); await page.waitForTimeout(400);
     await from.click(); const rect = await page.locator(".calendar-panel").boundingBox();
     check(rect.x >= 0 && rect.x+rect.width <= width+1, "Calendar stays inside "+width+"px");
-    check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),"Sales filters do not overflow at "+width);
     await page.screenshot({path:`test-results/calendar-sales-${width}.png`,fullPage:true});
+    const overflow = await page.evaluate(()=>({width:innerWidth, scroll:document.documentElement.scrollWidth, elements:[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1).slice(0,12).map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width}))}));
+    check(overflow.scroll<=width+1,"Sales filters do not overflow: "+JSON.stringify(overflow));
     await page.keyboard.press("Escape");
   }
   await page.setViewportSize({width:1440,height:1000});
   await page.goto(base+"/products/add");
-  const category = page.locator("select").filter({has:page.locator('option', {hasText:"Juice 12"})}).first();
+  const category = page.locator("dialog select").filter({has:page.locator('option', {hasText:"Juice 12"})}).first();
   await category.click(); await page.getByLabel("Search options",{exact:true}).fill("Juice 12");
   check(await page.locator(".select-panel [role=option]").count()===1,"Long dropdown search filters options");
   await page.locator(".select-panel").getByRole("option",{name:"Juice 12",exact:true}).click();

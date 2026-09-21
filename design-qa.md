@@ -1,38 +1,52 @@
-# Receipt and Settings visual QA
+# Calendar and dropdown UI verification
+
+## Latest thermal animation revision
 
 final result: passed
 
-Source visual truth: `D:/Next.js/Projects/karikku/Sources/Recept model.jpeg` (967 x 1600), with supplied `Receipt logo.jpeg` for the brand artwork.
+Supersedes the looping cream-printer treatment below. Per the latest request, checkout success is now a borderless full-viewport green/white screen, without the old dialog title bar, duplicate success text or pause/replay controls. The paper prints down once and remains visible. The animation renders the same `Receipt` component used for website invoices and physical printing, including logo, address, customer/cashier preferences, items, totals, payments and footer.
 
-Implementation evidence: `test-results/receipt-reference-match.png` (973 x 1821), `test-results/receipt-mobile.png` (1248 x 3200), and `test-results/settings-without-business.png`.
+Evidence inspected: `test-results/thermal-fullscreen-desktop.png` at 1280 x 900 and `test-results/thermal-mobile-long-receipt.png` at 390 x 844. Receipt has a neutral white background; compact green printer matches the site's controls; Print receipt and New Sale remain outside any bordered footer. Long receipts scroll within the paper region. No outstanding P0/P1/P2 findings for this revision.
 
-Viewport: desktop 1280 x 1200 CSS pixels, deviceScaleFactor 3.2; mobile 390 x 1000 CSS pixels at the same density. Receipt CSS width is 80mm (approximately 302px); the element screenshot is approximately 968px wide. Source and implementation were inspected together at approximately equal image widths, excluding application chrome. The screenshot height is content-driven and includes thermal paper margins. The fixture uses the source's invoice number, date, cashier, three items, quantities, prices and cash payment. It is intercepted only in the test browser, never inserted into the application's database.
+Validation: build and lint passed. Browser regression verifies exact viewport dimensions, zero dialog border, no restart after 8.2 seconds, unchanged printer position, matching visible/print receipt text, reduced motion, long receipts, mobile/tablet layout, print actions, 58mm/80mm one-page PDFs and no runtime errors. Physical printer/device testing is not claimed.
 
-Full-view comparison: same centered brand, address and phone hierarchy; separate invoice/date/time/cashier lines; numbered item grid; right-aligned amounts; bold total between rules; payment section and thank-you footer. Mobile preview has no horizontal receipt overflow and keeps Print Bill and Close visible.
+final result: passed
 
-Focused comparison: header artwork is the supplied raster logo, cropped in its display container without altering the source file. Item names, quantity/rate lines, all three amounts, subtotal and total were inspected at the near-source-width capture. All text is readable and the three source names fit on single lines at 80mm.
+## Scope and references
 
-## Fidelity surfaces
+Compared the supplied calendar screenshot and Dropdowns UI Design Collection with the rendered controls together in one image review. These are component references, not full-page layouts. The existing Karikku green palette, Arial typography, business values, and surrounding page layout are intentionally retained. Calendar reference uses March 2022; the app displays the selected live filter dates instead.
 
-- Typography: Arial body, bold item names and total match the sample's hierarchy. Script footer uses a Windows system font; exact lettering is a P3 difference.
-- Spacing: compact item rows and consistent column alignment. Retained 3mm thermal margins and slightly larger vertical spacing than the flat reference are intentional for printable output.
-- Colors: black on white, pale gray table heading, dashed item separators and solid total rules.
-- Assets: original supplied Karikku logo, with library phone/location icons. Their outline style and absence of decorative footer flourishes are P3 differences from the source.
-- Content: source address and phone are fixed branding; invoice, date, time, cashier, items, totals and payments use the current sale. Existing optional customer, variant, addon, discount, tax, loyalty and non-completed status information remains supported.
+## Visual evidence
 
-## Comparison history
+- `test-results/calendar-panel.png`: compact white calendar, paired date chips, Monday-first week, pale continuous range and solid green endpoints, restrained borders and month navigation.
+- `test-results/dropdown-sales-desktop.png`: white menu, soft shadow, selected row and check, compact option spacing matching the reference's hierarchy.
+- `test-results/calendar-sales-320.png`, `calendar-sales-390.png`, `calendar-sales-820.png`: responsive calendar stays inside the viewport.
+- `test-results/dropdown-modal.png`: dropdown remains above the modal content without clipping.
 
-1. Initial same-content screenshot was too tall, with oversized row spacing and total/footer type (P2).
-2. Reduced logo width, body line height, item padding and type sizes. Recaptured `receipt-reference-match.png` and compared alongside the reference. No remaining actionable P0/P1/P2 findings.
+Screenshots use Chromium at device scale factor 1, desktop 1440 x 1000 and responsive 320/390/820 x 956. Full-page screenshots may exceed viewport height. Calendar component capture was compared directly with the calendar source; dropdown comparison focuses on the open menu rather than the reference board's surrounding blank canvas.
 
-## Interaction and print checks
+## Findings and fixes
 
-- Existing isolated MongoDB / Playwright checkout, historical invoice preservation and print checks pass.
-- Settings opens on Invoice & Receipt; General business category, Business Name input and file upload are absent.
-- Invoice settings save successfully after removing the business form.
-- Receipt preview and Print Bill work; generated PDFs are one page at both 80mm and 58mm.
-- Reference fixture renders three items and a total of INR 1,320.00.
-- Mobile receipt has no horizontal overflow. No browser page errors in the visual fixture flow.
-- Lint, 29 unit tests and isolated production build pass.
+- P2: Calendar keyboard focus was deferred and could miss fast arrow input. Moved focus into the layout effect; date selection with Enter and arrows now passes.
+- P2: At 320px, the existing profile name and role caused horizontal page overflow. Compact profile display now shows the avatar and caret while retaining identity in the menu. Post-fix screenshot and width assertion pass.
+- Typography, spacing, colors, icons and actual control content reviewed. No new raster assets required; standard controls use existing icon components. No remaining P0/P1/P2 visual findings within this scope.
 
-Physical receipt-printer output remains untested. Browser PDF verification does not establish device-specific feed, ink density or printer-driver settings.
+## Validation
+
+- Production build and ESLint passed.
+- 30 unit tests passed.
+- 17 Playwright checks passed using a disposable MongoDB database: controlled dropdown values, keyboard and Escape interaction, date range highlighting and selection, mobile overflow, searchable category selection inside the product modal, cash movement persistence, settings draft selection, and browser errors.
+- Physical touch devices and browsers other than Chromium were not tested. No production data was changed.
+
+## Thermal payment animation — 20 September 2026
+
+final result: passed
+
+Reference: supplied Screen Recording 2026-09-20 093341.mp4, inspected at 1, 3, 5 and 7 seconds. Compared full-paper and success frames with the corresponding rendered component captures together. The source is a 562 x 568 recording; implementation is intentionally embedded in the existing checkout modal, with a 340px maximum printer width. Real invoice contents replace the reference's example products and amounts.
+
+- Evidence: `test-results/printer-reference-3.png`, `printer-reference-5.png`, `thermal-feed-completed.png`, `thermal-success.png`, `thermal-mobile-long-receipt.png`, `thermal-tablet-reduced-motion.png`.
+- Matches: fixed rounded cream printer, narrow dark slot, restrained warm shading, off-white monospace paper, soft shadows, serrated edge, actual downward sheet translation, retraction, staggered success text and working print action. No video, canvas, audio, flashing lights or printer vibration in the implementation.
+- Intentional adaptations: Karikku's modal/footer actions remain available; success subtitle is shop-appropriate; pause reveals all invoice lines; reduced motion provides a static scrollable receipt. The loop is approximately 8 seconds and holds while its print button has keyboard focus.
+- P2 resolved: an incorrectly positioned slot shadow left a horizontal stripe below the success button. Replaced it with a fixed shadow at the slot; inspected the revised success screenshot.
+- Typography, paper spacing, warm colors, icon quality and dynamic text reviewed. No remaining P0/P1/P2 findings. Physical devices and non-Chromium browsers remain untested.
+- Validation: disposable-database checkout regression verifies downward motion, stable printer bounds, retraction, success, looping, pause, print during animation, 40-line receipts, reduced motion, tablet/mobile layout and no browser errors. Printed output remains one 80.1mm page (130.9mm high for the tested sale), and the 58mm PDF check passes. Production database untouched.

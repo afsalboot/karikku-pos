@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useId, useState } from "react";
+import { useCallback, useId, useLayoutEffect, useRef, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import PickerPanel from "./picker-panel";
 const iso = date => `${String(date.getFullYear()).padStart(4,"0")}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
@@ -7,12 +7,19 @@ const parse = value => /^\d{4}-\d{2}-\d{2}$/.test(value || "") ? new Date(`${val
 export default function DateInput({ className = "", rangeStart, rangeEnd, onChange, ...props }) {
   const id = useId(), [anchor, setAnchor] = useState(null), [month, setMonth] = useState(() => new Date()), [focusDay, setFocusDay] = useState("");
   const close = useCallback(() => setAnchor(null), []);
+  const keyboardFocus = useRef(false);
+  useLayoutEffect(() => {
+    if (anchor && keyboardFocus.current) {
+      document.getElementById(`${id}-${focusDay}`)?.focus();
+      keyboardFocus.current = false;
+    }
+  }, [anchor, focusDay, id]);
   function open(input, keyboard = false) {
     if (input.matches(":disabled") || input.readOnly) return;
     const selected = input.value || rangeStart || iso(new Date());
     const bounded = props.min && selected < props.min ? props.min : props.max && selected > props.max ? props.max : selected;
     setMonth(parse(bounded)); setFocusDay(bounded); setAnchor(input);
-    if (keyboard) requestAnimationFrame(() => document.getElementById(`${id}-${bounded}`)?.focus());
+    keyboardFocus.current = keyboard;
   }
   function select(value) {
     if (anchor.matches(":disabled")) return;
@@ -38,8 +45,8 @@ export default function DateInput({ className = "", rangeStart, rangeEnd, onChan
     else if (e.key === "End") next.setDate(next.getDate() + 6 - (next.getDay() + 6) % 7);
     else { next.setDate(1); next.setMonth(next.getMonth() + (e.key === "PageUp" ? -1 : 1)); }
     const value = iso(next); if (!allowed(value)) return;
+    keyboardFocus.current = true;
     setFocusDay(value); setMonth(next);
-    requestAnimationFrame(() => document.getElementById(`${id}-${value}`)?.focus());
   }
   const today = iso(new Date());
   return <span className={`picker-date ${className}`}>

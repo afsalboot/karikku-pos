@@ -120,16 +120,17 @@ export function ReceiptModal({ sale, onClose, success = false, autoPrint = false
   return (
     <Modal
       title={success ? "Payment Successful" : sale.invoiceNumber}
+      fullscreen={success}
       onClose={onClose}
     >
       <div
         className={`receipt-preview ${success ? "payment-success-preview" : ""}`}
       >
         {success
-          ? <ThermalReceiptPrinter key={sale._id || sale.invoiceNumber} invoice={sale} renderReceipt={renderReceipt} contentRef={contentRef} />
+          ? <><ThermalReceiptPrinter key={sale._id || sale.invoiceNumber} invoice={sale}><Receipt sale={sale} loyaltyEnabled={settings.data?.loyaltyEnabled === true}/></ThermalReceiptPrinter><div className="receipt-print-source" aria-hidden="true"><div ref={contentRef}>{renderReceipt(sale)}</div></div></>
           : <div ref={contentRef}>{renderReceipt(sale)}</div>}
       </div>
-      <footer className="modal-footer">
+      <footer className={success ? "payment-success-actions" : "modal-footer"}>
         <button
           className="button secondary"
           aria-label="Print Bill"
@@ -138,7 +139,7 @@ export function ReceiptModal({ sale, onClose, success = false, autoPrint = false
           onClick={() => print()}
         >
           <Printer size={20} />
-          {!success && "Print Bill"}
+          {success ? "Print receipt" : "Print Bill"}
         </button>
         <button className="button primary" onClick={onClose}>
           {success && <Plus size={18} />}

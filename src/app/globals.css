@@ -729,6 +729,10 @@ a {
   font-size: 11px;
 }
 .profile-dropdown { position: relative; flex-shrink: 0; }
+@media (max-width: 480px) {
+  .current-user > span:first-child { display: none; }
+  .current-user { gap: 6px; }
+}
 .profile-dropdown summary { cursor: pointer; list-style: none; border-radius: 8px; min-height: 44px; }
 .profile-dropdown summary::-webkit-details-marker { display: none; }
 .profile-dropdown summary:focus-visible { outline: 2px solid #568143; outline-offset: 4px; }
@@ -3627,77 +3631,6 @@ a {
   }
 }
 
-.payment-success-preview {
-  max-height: calc(100dvh - 200px);
-  padding: 20px 16px 16px;
-  background: #f2f3f1;
-}
-.thermal-printer {
-  width: min(100%, calc(var(--receipt-width) + 16px));
-  margin: 0 auto;
-}
-.thermal-feed-window {
-  max-height: min(52dvh, 480px);
-  overflow: hidden;
-  padding: 3px 8px 0;
-  scrollbar-width: thin;
-  scrollbar-color: #b6bcb7 transparent;
-}
-.thermal-paper {
-  position: relative;
-  transform: translateY(var(--paper-feed-distance, 100%));
-  background: transparent;
-  box-shadow: 0 0 0 1px rgb(25 32 28 / 5%), 0 2px 7px rgb(25 32 28 / 7%);
-}
-.thermal-printer[data-state="printing"] .thermal-paper {
-  animation: thermal-paper-feed 2050ms linear both;
-  will-change: transform;
-}
-.thermal-printer[data-state="completed"] .thermal-paper { transform: none; }
-.thermal-printer[data-state="completed"] .thermal-feed-window { overflow-y: auto; }
-.thermal-printer-body {
-  position: relative;
-  height: 28px;
-  padding: 5px 8px 0;
-  background: #303632;
-  border: 1px solid #262c28;
-  border-radius: 4px 4px 7px 7px;
-  box-shadow: 0 3px 7px rgb(25 32 28 / 10%);
-}
-.thermal-printer-slot {
-  display: block;
-  height: 3px;
-  border-radius: 2px;
-  background: #151a17;
-  box-shadow: 0 1px 0 rgb(255 255 255 / 9%);
-}
-.thermal-paper .receipt { font-family: "Courier New", ui-monospace, monospace; }
-.thermal-paper .receipt .receipt-date { grid-template-columns: 48px minmax(0, 1fr); }
-.thermal-paper .receipt .receipt-address { font-size: 8px; }
-.thermal-paper .receipt .receipt-total.grand { font-size: 18px; }
-.thermal-paper .receipt footer strong { font-family: inherit; font-size: 14px; font-style: normal; }
-.thermal-paper .receipt footer span { font-size: 10px; }
-.thermal-paper-edge {
-  height: 4px;
-  margin-bottom: 3px;
-  background: #fff;
-  clip-path: polygon(0 0,100% 0,100% 40%,98% 100%,96% 40%,94% 100%,92% 40%,90% 100%,88% 40%,86% 100%,84% 40%,82% 100%,80% 40%,78% 100%,76% 40%,74% 100%,72% 40%,70% 100%,68% 40%,66% 100%,64% 40%,62% 100%,60% 40%,58% 100%,56% 40%,54% 100%,52% 40%,50% 100%,48% 40%,46% 100%,44% 40%,42% 100%,40% 40%,38% 100%,36% 40%,34% 100%,32% 40%,30% 100%,28% 40%,26% 100%,24% 40%,22% 100%,20% 40%,18% 100%,16% 40%,14% 100%,12% 40%,10% 100%,8% 40%,6% 100%,4% 40%,2% 100%,0 40%);
-}
-@keyframes thermal-paper-feed {
-  0% { transform: translateY(var(--paper-feed-distance)); }
-  94% { transform: translateY(0); }
-  97% { transform: translateY(-1px); }
-  100% { transform: translateY(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .thermal-printer .thermal-paper { animation: none !important; transform: none; }
-  .thermal-printer .thermal-feed-window { overflow-y: auto; }
-}
-@media print {
-  .thermal-printer-body, .thermal-paper-edge { display: none !important; }
-  .thermal-feed-window { max-height: none; overflow: visible; padding: 0; }
-  .thermal-printer .thermal-paper { animation: none !important; transform: none !important; box-shadow: none; }
-}
 
 .sales-history > .page-heading {
   margin-bottom: 22px;

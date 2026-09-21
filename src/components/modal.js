@@ -11,6 +11,7 @@ export default function Modal({
   drawer = false,
   modeless = false,
   closable = true,
+  fullscreen = false,
 }) {
   const dialog = useRef(null);
   const titleId = useId();
@@ -30,19 +31,19 @@ export default function Modal({
   return (
     <dialog
       ref={dialog}
-      className={`modal ${compact ? "compact" : ""} ${drawer ? "sale-details-drawer" : ""} ${modeless ? "modeless" : ""}`}
+      className={`modal ${fullscreen ? "payment-success-screen" : ""} ${compact ? "compact" : ""} ${drawer ? "sale-details-drawer" : ""} ${modeless ? "modeless" : ""}`}
       aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault();
         if (closable) onClose();
       }}
     >
-      <header className="modal-header">
+      <header className={fullscreen ? "sr-only" : "modal-header"}>
         <div>
           <h2 id={titleId}>{title}</h2>
           {description && <p>{description}</p>}
         </div>
-        {closable && (
+        {closable && !fullscreen && (
           <button
             type="button"
             className="icon-button"

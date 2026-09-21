@@ -27,8 +27,10 @@ async function syncCatalogInternal({ force = false } = {}) {
   if (!force && metadata?.lastSyncedAt && Date.now() - Date.parse(metadata.lastSyncedAt) < CATALOG_REFRESH_MS)
     return false;
 
-  const categories = await api("/categories");
-  const first = await api("/products?active=true&limit=100&page=1");
+  const [categories, first] = await Promise.all([
+    api("/categories"),
+    api("/products?active=true&limit=100&page=1"),
+  ]);
   const pages = [first];
   for (let page = 2; page <= first.pages; page += 1)
     pages.push(await api(`/products?active=true&limit=100&page=${page}`));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { offlineDb } from "@/lib/offline/db";
 import { syncCatalog } from "@/lib/offline/cache-manager";
 
@@ -37,15 +37,15 @@ export function useOfflineProducts({ query = "", category = "", page = 1, limit 
 
   useEffect(() => {
     let active = true;
-    syncCatalog().then(() => active && load()).catch(() => {});
+    syncCatalog().then((changed) => active && changed && load()).catch(() => {});
     return () => { active = false; };
   }, [load]);
 
-  return {
+  return useMemo(() => ({
     data: state.ready ? { items: state.items, total: state.total, page, pages: Math.ceil(state.total / limit) } : null,
     categories: { data: state.ready ? state.categories : null, error: state.error, loading: !state.ready, refresh: () => syncCatalog({ force: true }).then(load) },
     error: state.error,
     loading: !state.ready,
     refresh: () => syncCatalog({ force: true }).then(load),
-  };
+  }), [state, page, limit, load]);
 }

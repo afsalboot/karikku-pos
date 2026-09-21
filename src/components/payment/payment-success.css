@@ -1,0 +1,103 @@
+.modal.payment-success-screen {
+  inset: 0; margin: 0; width: 100%; max-width: none; height: 100dvh;
+  max-height: none; padding: 0; border: 0; border-radius: 0; box-shadow: none;
+  background: #f6f8f4; color: #244736;
+}
+.modal.payment-success-screen[open] { display: flex; flex-direction: column; }
+.payment-success-screen .payment-success-preview {
+  flex: 1; min-height: 0; max-height: none; width: 100%; padding: 24px 16px 8px;
+  display: flex; justify-content: center; align-items: center; background: transparent;
+  overflow: hidden;
+}
+.receipt-print-source { position: fixed; left: -10000px; top: 0; }
+.thermal-printer { width: min(100%, 348px); height: 100%; max-height: 780px; margin: 0 auto; }
+.thermal-stage { position: relative; height: 100%; padding-top: 8px; }
+.thermal-printer-body {
+  position: relative; z-index: 2; width: 100%; height: 56px; border: 0;
+  border-radius: 12px; background: #285c40;
+  box-shadow: inset 0 2px 2px #ffffff20, inset 0 -3px 4px #102a2630, 0 4px 10px #24473618;
+}
+.thermal-printer-slot {
+  position: absolute; left: 13px; right: 13px; bottom: 10px; height: 8px;
+  border-radius: 4px; background: #142f23;
+  box-shadow: inset 0 2px 3px #0005, 0 1px 1px #ffffff25;
+}
+.thermal-feed-window {
+  position: absolute; z-index: 3; top: 46px; left: 20px; right: 20px;
+  bottom: 0; overflow: hidden; padding: 0 3px 8px;
+  scrollbar-width: none;
+}
+.thermal-feed-window::-webkit-scrollbar { display: none; }
+.thermal-paper { position: relative; transform: translateY(calc(-100% + 7px));
+  background: #fff; box-shadow: 0 2px 5px #24473615; will-change: transform; }
+.thermal-paper .receipt { max-width: 100%; margin: 0 auto; box-shadow: none; border: 0; border-radius: 0; }
+.thermal-paper-edge {
+  height: 5px;
+  background: #fff;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 40%,
+    98% 100%,
+    96% 40%,
+    94% 100%,
+    92% 40%,
+    90% 100%,
+    88% 40%,
+    86% 100%,
+    84% 40%,
+    82% 100%,
+    80% 40%,
+    78% 100%,
+    76% 40%,
+    74% 100%,
+    72% 40%,
+    70% 100%,
+    68% 40%,
+    66% 100%,
+    64% 40%,
+    62% 100%,
+    60% 40%,
+    58% 100%,
+    56% 40%,
+    54% 100%,
+    52% 40%,
+    50% 100%,
+    48% 40%,
+    46% 100%,
+    44% 40%,
+    42% 100%,
+    40% 40%,
+    38% 100%,
+    36% 40%,
+    34% 100%,
+    32% 40%,
+    30% 100%,
+    28% 40%,
+    26% 100%,
+    24% 40%,
+    22% 100%,
+    20% 40%,
+    18% 100%,
+    16% 40%,
+    14% 100%,
+    12% 40%,
+    10% 100%,
+    8% 40%,
+    6% 100%,
+    4% 40%,
+    2% 100%,
+    0 40%
+  );
+}
+.payment-success-actions { display: flex; justify-content: center; align-items: center; gap: 12px;
+  flex-shrink: 0; padding: 16px 16px max(20px, env(safe-area-inset-bottom));
+  background: transparent; border: 0; }
+.thermal-feed-window:focus-visible { outline: 2px solid #65816b; outline-offset: 1px; }
+.thermal-printer[data-state="completed"] .thermal-paper { transform: none !important; will-change: auto; }
+.thermal-printer[data-state="completed"] .thermal-feed-window { overflow-y: auto; }
+@media (prefers-reduced-motion: reduce) {
+  .thermal-paper { transform: none !important; will-change: auto; }
+  .thermal-feed-window { overflow-y: auto; }
+}
+@media print { .thermal-printer { display: none !important; } }

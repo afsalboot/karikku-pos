@@ -199,6 +199,8 @@ export default function ReportsAnalytics() {
         </label>
         <DateField
           label="From date"
+          rangeStart={draft.from}
+          rangeEnd={draft.to}
           value={draft.from}
           disabled={period !== "custom"}
           onChange={(from) => {
@@ -208,6 +210,8 @@ export default function ReportsAnalytics() {
         />
         <DateField
           label="To date"
+          rangeStart={draft.from}
+          rangeEnd={draft.to}
           value={draft.to}
           disabled={period !== "custom"}
           onChange={(to) => {
@@ -604,11 +608,13 @@ export default function ReportsAnalytics() {
     </div>
   );
 }
-function DateField({ label, value, disabled, onChange }) {
+function DateField({ label, value, disabled, onChange, rangeStart, rangeEnd }) {
   return (
     <label>
       <span>{label}</span>
       <DateInput
+        rangeStart={rangeStart}
+        rangeEnd={rangeEnd}
         type="date"
         value={value}
         disabled={disabled}

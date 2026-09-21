@@ -1,11 +1,13 @@
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { connectDB } from "./mongodb.js";
 import { COOKIE, verifyToken } from "./jwt.js";
 import User from "../models/User.js";
 export function fail(status, message) {
   throw Object.assign(new Error(message), { status });
 }
-export async function currentUser() {
+// Deduplicate layout/page verification only within a server render, never across requests.
+export const currentUser = cache(async function currentUser() {
   const token = (await cookies()).get(COOKIE)?.value;
   if (!token) return null;
   let payload;
@@ -18,7 +20,7 @@ export async function currentUser() {
   await connectDB();
   const user = await User.findById(payload.sub).lean();
   return user?.active && user.tokenVersion === payload.version ? user : null;
-}
+});
 export async function requireUser() {
   const user = await currentUser();
   if (!user) fail(401, "Please sign in to continue");

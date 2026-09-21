@@ -1,9 +1,10 @@
 import ProductImage from "./product-image";
+import { memo } from "react";
 import { Search, Plus, ShoppingBasket } from "lucide-react";
 import { formatCurrency } from "@/lib/client";
 import { Notice, EmptyState, Pagination } from "@/components/ui/shared";
 
-export default function ProductBrowser({
+function ProductBrowser({
   products,
   categories,
   query,
@@ -105,6 +106,8 @@ export default function ProductBrowser({
     </section>
   );
 }
+export default memo(ProductBrowser);
+
 function ProductCard({ product, pending, select, count }) {
   return (
     <button

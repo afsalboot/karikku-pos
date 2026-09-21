@@ -1,6 +1,6 @@
 "use client";
 import Select from "@/components/ui/select";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { ShoppingBasket, ChevronUp } from "lucide-react";
 import ProductBrowser from "./product-browser";
 import CartPanel from "./cart-panel";
@@ -67,8 +67,9 @@ function Pos({ duplicateId }) {
   } catch (error) {
     calculationError = error.message;
   }
-  function add(product, variant, addons = []) {
-    cart.addItem({
+  const addItem = cart.addItem;
+  const add = useCallback((product, variant, addons = []) => {
+    addItem({
       quantity: preferences.defaultQuantity,
       productId: product._id,
       name: product.name,
@@ -84,11 +85,11 @@ function Pos({ duplicateId }) {
       ),
     });
     setConfigure(null);
-  }
-  function select(product) {
+  }, [addItem, preferences.defaultQuantity]);
+  const select = useCallback((product) => {
     if (product.variantsEnabled || product.addonsEnabled) setConfigure(product);
     else add(product);
-  }
+  }, [add]);
   async function checkout(paymentData) {
     if (lock.current || !cart.items.length || !paymentData || !totals) return;
     const hasCustomer = preferences.customerPrompt !== "NEVER" && Boolean(customer.name.trim() || customer.phone.trim());

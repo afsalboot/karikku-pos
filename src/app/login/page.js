@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { api } from "@/lib/client";
@@ -7,8 +7,11 @@ export default function LoginPage() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const submitting = useRef(false);
   async function submit(event) {
     event.preventDefault();
+    if (submitting.current) return;
+    submitting.current = true;
     setPending(true);
     setError("");
     const form = new FormData(event.currentTarget);
@@ -21,8 +24,8 @@ export default function LoginPage() {
         },
       });
       router.replace(user.role === "ADMIN" ? "/dashboard" : "/pos");
-      router.refresh();
     } catch (error) {
+      submitting.current = false;
       setError(error.message);
       setPending(false);
     }
